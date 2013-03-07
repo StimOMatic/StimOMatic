@@ -1,0 +1,1509 @@
+Timer unit: 1e-06 s
+
+File: pyglet_app_data_management.py
+Function: setup at line 50
+Total time: 4.1e-05 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    50                                           	@profile_code(PROFILE)
+    51                                           	def setup(self, WIN_WIDTH_DEFAULT, NBR_DATA_POINTS_PER_VBO, NBR_DATA_POINTS_PER_BUFFER, SECONDS_TO_VISUALIZE_PER_PANEL, scanrate):
+    52                                           
+    53                                           
+    54         1           31     31.0     75.6  		output = calc_VBO_numbers(NBR_DATA_POINTS_PER_VBO, NBR_DATA_POINTS_PER_BUFFER, SECONDS_TO_VISUALIZE_PER_PANEL, scanrate)
+    55         1            1      1.0      2.4  		self.NBR_DATA_POINTS_PER_VBO, self.NBR_VBOS_PER_PANEL, self.SECONDS_TO_VISUALIZE_PER_PANEL = output
+    56         1            1      1.0      2.4  		self.NBR_DATA_POINTS_PER_BUFFER = NBR_DATA_POINTS_PER_BUFFER
+    57                                           
+    58                                           		# default X values
+    59         1            1      1.0      2.4  		X_MIN = 0
+    60         1            1      1.0      2.4  		X_MAX = float(WIN_WIDTH_DEFAULT) / (self.NBR_VBOS_PER_PANEL + 1)
+    61                                           		# print X_MAX
+    62                                           
+    63                                           		# shift each VBO by how much in X & Y direction, relative to the previous VBO?
+    64         1            2      2.0      4.9  		self.SHIFT_Y_BY = 0
+    65         1            2      2.0      4.9  		self.SHIFT_X_BY = abs(X_MIN) + abs(X_MAX)
+    66                                           
+    67                                           		# while generating the fake data, what is the stepsize between individual x data 
+    68                                           		# points?
+    69         1            1      1.0      2.4  		self.STEPSIZE_X = float(self.SHIFT_X_BY) / self.NBR_DATA_POINTS_PER_VBO
+    70                                           
+    71                                           		# how much distance do 'NBR_DATA_POINTS_PER_BUFFER' points cover in x direction?
+    72         1            1      1.0      2.4  		self.SHIFT_X_SINGLE_BUFFER = self.STEPSIZE_X * self.NBR_DATA_POINTS_PER_BUFFER
+
+File: pyglet_app_data_management.py
+Function: calc_x_values_single_buffer at line 75
+Total time: 0.002201 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    75                                           	@profile_code(PROFILE)
+    76                                           	def calc_x_values_single_buffer(self):
+    77       149         2012     13.5     91.4  		x_values = np.arange(0, self.SHIFT_X_SINGLE_BUFFER, self.STEPSIZE_X)
+    78       149          189      1.3      8.6  		return x_values
+
+File: pyglet_app_data_management.py
+Function: generate_numbers_for_x_vector at line 81
+Total time: 0.022873 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    81                                           	@profile_code(PROFILE)
+    82                                           	def generate_numbers_for_x_vector(self, x, zeros = False):
+    83                                           		
+    84       298          421      1.4      1.8  		nbr_elements = len(x)
+    85                                           		
+    86       298          316      1.1      1.4  		if zeros: # generate zeros
+    87                                           		    # TODO: check whether we need to add offset (Y_OFFSET_PANEL + 1)
+    88                                           		    y = np.zeros(nbr_elements)# + Y_OFFSET_PANEL + 1
+    89                                           		
+    90                                           		else: # generate random values.
+    91                                           		    # generate a vector of random numbers in range [0, 1] 
+    92                                           		    # y = [random.random() for i in range(nbr_elements)]
+    93       298         5496     18.4     24.0  		    y = np.random.random(nbr_elements)
+    94                                           		
+    95                                           		    # generate a scaling vector of random numbers in range [1, NOISE_SIZE]
+    96                                           		    # this vector will scale each data point
+    97                                           		    # y_scale = [random.randint(1, NOISE_SIZE) for i in range(nbr_elements)]
+    98       298         6919     23.2     30.2  		    y_scale = np.random.randint(1, self.NOISE_SIZE_NP, nbr_elements)
+    99                                           		
+   100                                           		    # generate a spike every 'GENERATE_SPIKE_EVERY_N_POINTS' data points
+   101                                           		    # generate an intial offset so that spikes don't occur at same position.
+   102       298          486      1.6      2.1  		    y_scale_offset = np.random.randint(1, self.GENERATE_SPIKE_EVERY_N_POINTS)
+   103       298         1920      6.4      8.4  		    y_scale[self.GENERATE_SPIKE_EVERY_N_POINTS - 1 + y_scale_offset::self.GENERATE_SPIKE_EVERY_N_POINTS] = self.SPIKE_SIZE
+   104                                           		
+   105                                           		    # rescale each data point accordingly
+   106       298         6970     23.4     30.5  		    y = (y * y_scale) + self.SHIFT_Y_BY + self.Y_OFFSET_PANEL
+   107                                           		
+   108       298          345      1.2      1.5  		return y
+
+File: pyglet_app_data_management.py
+Function: append_data_to_plot_queue at line 113
+Total time: 0.001848 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   113                                           @profile_code(PROFILE)
+   114                                           def append_data_to_plot_queue(plot_queue, new_data, nbr_buffers_per_mmap_file):
+   115                                               
+   116                                               # reformat data so that the buffers from 'j' mmap files
+   117                                               # are paired together.
+   118       298          760      2.6     41.1      for j in range(int(min(nbr_buffers_per_mmap_file))):
+   119       149          124      0.8      6.7          data_to_add = []
+   120       447          422      0.9     22.8          for k in range(len(new_data)):
+   121       298          374      1.3     20.2              data_to_add.append(new_data[k][j])
+   122                                                   
+   123                                                   # append 'data_to_add' to end (right side) of queue
+   124       149          168      1.1      9.1          plot_queue.append(data_to_add)
+
+File: pyglet_app_data_management.py
+Function: setup_plotting_queue at line 127
+Total time: 2.1e-05 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   127                                           @profile_code(PROFILE)
+   128                                           def setup_plotting_queue():
+   129         1           21     21.0    100.0  	return setup_queue(max_nbr_buffers = 20000)
+
+File: pyglet_app_data_management.py
+Function: setup_queue at line 132
+Total time: 1.3e-05 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   132                                           @profile_code(PROFILE)
+   133                                           def setup_queue(max_nbr_buffers = 20000):
+   134                                               # setup plotting queue
+   135         1            5      5.0     38.5      import collections
+   136         1            8      8.0     61.5      plot_queue = collections.deque([], max_nbr_buffers)
+   137         1            0      0.0      0.0      return plot_queue
+
+File: pyglet_app_data_management.py
+Function: create_empty_data_buffer at line 140
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   140                                           @profile_code(PROFILE)
+   141                                           def create_empty_data_buffer(nbr_mmap_files, zeros, nbr_buffers = 1):
+   142                                               # pre-allocate each buffer
+   143                                               buffers = []
+   144                                               for buffer_index in xrange(nbr_buffers):
+   145                                                   # create deep copy of zeros, otherwise we create multiple references to 
+   146                                                   # the same object.
+   147                                                   zeros_copy = zeros.copy()
+   148                                                   buffers.append(zeros)
+   149                                           
+   150                                               data = []
+   151                                               for mmap_file_index in xrange(nbr_mmap_files):
+   152                                                   # put data into zero-th buffer
+   153                                                   data.append(buffers)
+   154                                           
+   155                                               return data
+
+File: pyglet_app_data_management.py
+Function: get_data_from_plot_queue at line 192
+Total time: 0.000501 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   192                                           @profile_code(PROFILE)
+   193                                           def get_data_from_plot_queue(plot_queue):
+   194                                               # remove & return left most element from queue
+   195       148          115      0.8     23.0      data = []
+   196       148          150      1.0     29.9      if len(plot_queue) > 0:
+   197       148          150      1.0     29.9          data = plot_queue.popleft()
+   198       148           86      0.6     17.2      return data	
+
+File: pyglet_app_data_management.py
+Function: request_new_data at line 201
+Total time: 0.112684 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   201                                           @profile_code(PROFILE)
+   202                                           def request_new_data(USE_MMAP, DATA, MMAP):
+   203                                               ''' generates new raw data or grabs new data from MMAP '''
+   204                                               
+   205       149          222      1.5      0.2      if USE_MMAP == 1:
+   206                                                   new_data = MMAP.get_data_from_mmap(MMAP.mmap_stats, MMAP.mmap_data)
+   207                                                   # MMAP.update_data_stream_status(new_data)
+   208                                                   # print new_data
+   209                                               else:
+   210       149          228      1.5      0.2          new_data = []
+   211                                                   # get the x-spacing right
+   212       149         3764     25.3      3.3          x_values = DATA.calc_x_values_single_buffer()
+   213       447          819      1.8      0.7          for j in xrange(DATA.NBR_INDEPENDENT_CHANNELS):
+   214                                                       # put data into zero-th buffer
+   215       298        28082     94.2     24.9              new_data.append([DATA.generate_numbers_for_x_vector(x_values)])
+   216                                           
+   217       149          176      1.2      0.2      nbr_mmap_files = len(new_data)
+   218       149          558      3.7      0.5      nbr_buffers_per_mmap_file = np.zeros(nbr_mmap_files)
+   219       149          391      2.6      0.3      empty_data = np.zeros(nbr_mmap_files)    
+   220       447          665      1.5      0.6      for j in range(nbr_mmap_files):
+   221                                               
+   222                                                   # update number of buffers in this 'file'. Will fail
+   223                                                   # if len(new_data) != NBR_INDEPENDENT_CHANNELS
+   224       298          278      0.9      0.2          try:
+   225       298          514      1.7      0.5              nbr_buffers_per_mmap_file[j] = len(new_data[j])
+   226                                                   except:
+   227                                                       continue
+   228                                                   
+   229                                                   # check whether the first buffer of the current mmap file is empty
+   230       298        75725    254.1     67.2          sum_data = sum(new_data[j][0])
+   231       298         1101      3.7      1.0          if sum_data == 0 or sum_data == DATA_RECEIVED_ACK_NUM:
+   232                                                       empty_data[j] = 1
+   233                                                       
+   234                                               # print empty_data
+   235       149          161      1.1      0.1      return new_data, empty_data, nbr_buffers_per_mmap_file
+
+File: pyglet_app_data_management.py
+Function: setup_incoming_data_interface at line 238
+Total time: 8.2e-05 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   238                                           @profile_code(PROFILE)
+   239                                           def setup_incoming_data_interface(USE_MMAP, PLUGIN_NAME, NBR_CHANNELS, nPointsToUpdate, nPoints, WINDOW_WIDTH_CURRENT, WINDOW_HEIGHT_CURRENT):
+   240                                           
+   241         1            1      1.0      1.2  	status = True
+   242         1            1      1.0      1.2  	MMAP = False
+   243         1            1      1.0      1.2  	DATA = False
+   244                                           
+   245                                           	''' setup mmap interface '''
+   246         1            1      1.0      1.2  	if USE_MMAP == 1:
+   247                                           		TMP_DIR = setup_tmp_directory(PLUGIN_NAME)
+   248                                           
+   249                                           		# initialize mmap interface
+   250                                           		from pyglet_app_mmap_helper import mmap_interface
+   251                                           		MMAP = mmap_interface()
+   252                                           
+   253                                           		# configure parameters
+   254                                           		MMAP.NBR_INDEPENDENT_CHANNELS = NBR_CHANNELS
+   255                                           		MMAP.NBR_DATA_POINTS_PER_BUFFER_INT = nPointsToUpdate
+   256                                           		MMAP.TMP_DIR = TMP_DIR
+   257                                           
+   258                                           		# setup everything
+   259                                           		MMAP.setup()
+   260                                           
+   261                                           		if not MMAP.INITIALIZED:
+   262                                           			status = False
+   263                                           
+   264                                           	else:
+   265                                           		''' setup data interface '''
+   266         1            5      5.0      6.1  		DATA = random_data_interface()
+   267         1            2      2.0      2.4  		DATA.NBR_INDEPENDENT_CHANNELS = NBR_CHANNELS
+   268                                           
+   269         1            1      1.0      1.2  		nbr_data_points_per_vbo = nPoints
+   270         1            1      1.0      1.2  		nbr_data_points_per_buffer = nPointsToUpdate
+   271         1            1      1.0      1.2  		seconds_to_visualize_per_panel = 1
+   272         1            1      1.0      1.2  		scanrate = 1
+   273                                           
+   274         1           62     62.0     75.6  		DATA.setup(WINDOW_WIDTH_CURRENT, nbr_data_points_per_vbo, nbr_data_points_per_buffer, seconds_to_visualize_per_panel, scanrate)
+   275                                           
+   276                                           		# overwrite the size of the noise and spike levels to match the current window size
+   277         1            2      2.0      2.4  		DATA.SPIKE_SIZE = 0.8 * WINDOW_HEIGHT_CURRENT
+   278         1            2      2.0      2.4  		DATA.NOISE_SIZE = 0.2 * WINDOW_HEIGHT_CURRENT
+   279                                           
+   280                                           
+   281         1            1      1.0      1.2  	return status, MMAP, DATA
+
+File: pyglet_app_gl_axes.py
+Function: setup at line 15
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    15                                           	@profile_code(PROFILE)
+    16                                           	def setup(self, window_width, window_height, zero_offset = 0):
+    17                                           		# where should the origin of our coordinate system be placed?
+    18                                           		# ORG = gl_transform_list_to_GLfloat([zero_offset, zero_offset, 0])
+    19                                           
+    20                                           		# we draw the axes from [-value : +value]
+    21                                           		self.XP_minus = gl_transform_list_to_GLfloat([-window_width, zero_offset, 0])
+    22                                           		self.YP_minus = gl_transform_list_to_GLfloat([zero_offset, -window_height, 0])
+    23                                           
+    24                                           		self.XP = gl_transform_list_to_GLfloat([window_width, zero_offset, 0])
+    25                                           		self.YP = gl_transform_list_to_GLfloat([zero_offset, window_height, 0])
+    26                                           
+    27                                           		# 'win_height' and 'win_width' are more panel heights and widths.
+    28                                           		self.win_height = window_height
+    29                                           		self.win_width = window_width
+    30                                           		self.zero_offset = zero_offset
+
+File: pyglet_app_gl_axes.py
+Function: draw at line 33
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    33                                           	@profile_code(PROFILE)
+    34                                           	def draw(self):
+    35                                           
+    36                                           		# check if the current 'glOrtho' Matrix has changed - compare to our 
+    37                                           		# previously used values.
+    38                                           		curr_height = self.settings_main_app.CURRENT_glOrtho_MATRIX[3]
+    39                                           		curr_width = self.settings_main_app.CURRENT_glOrtho_MATRIX[1]
+    40                                           		if self.win_height != curr_height or self.win_width != curr_width:
+    41                                           			self.setup(curr_width, curr_height, self.zero_offset)
+    42                                           
+    43                                           		glPushMatrix()
+    44                                           		glLineWidth(5.0)
+    45                                           
+    46                                           		glBegin(GL_LINES)
+    47                                           		glColor3f(1, 1, 1); glVertex3fv(self.XP_minus); glVertex3fv(self.XP); # x axis
+    48                                           		glColor3f(1, 1, 1); glVertex3fv(self.YP_minus); glVertex3fv(self.YP); # y axis
+    49                                           		glEnd()
+    50                                           
+    51                                           		glPopMatrix()
+
+File: pyglet_app_gl_axes.py
+Function: setup at line 61
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    61                                           	@profile_code(PROFILE)
+    62                                           	def setup(self, window_width, window_height, y_lims, spacing = 10, length = 15, direction = 1, major_tick_every_x = 5, zero_offset = 0):
+    63                                           
+    64                                           		# need to deepcopy here, otherwise we end up with a pointer to the original values.
+    65                                           		self.y_lims = deepcopy(y_lims)
+    66                                           		self.direction = direction # 1 == y axis, 0 == x axis.
+    67                                           		self.spacing = spacing
+    68                                           
+    69                                           		self.length = length
+    70                                           		self.major_tick_every_x = major_tick_every_x
+    71                                           		self.zero_offset = zero_offset
+    72                                           
+    73                                           		self.win_height = window_height
+    74                                           		self.win_width = window_width
+    75                                           
+    76                                           		self.draw_axis_tics(y_lims, spacing, length)
+
+File: pyglet_app_gl_axes.py
+Function: draw_axis_tics at line 79
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    79                                           	@profile_code(PROFILE)
+    80                                           	def draw_axis_tics(self, y_lims, spacing, length):
+    81                                           
+    82                                           		axis_span = int(max(y_lims))
+    83                                           
+    84                                           		# spacing can't be zero.
+    85                                           		if spacing == 0:
+    86                                           			spacing = 0.1
+    87                                           
+    88                                           		# where to put the tick marks (along the axis)
+    89                                           		tick_locations = get_range_through_zero(axis_span, spacing)
+    90                                           		# tick_locations = arange(-axis_span, axis_span + spacing, spacing)
+    91                                           
+    92                                           		# what is the extend of the tick marks
+    93                                           		minor_length_position = length / 2
+    94                                           		major_length_position = length
+    95                                           
+    96                                           		self.tick_locations = tick_locations
+    97                                           		self.minor_length_position = minor_length_position
+    98                                           		self.major_length_position = major_length_position
+    99                                           
+   100                                           		self.labels = []
+   101                                           		if self.direction == 1: # y axis ticks
+   102                                           			pos_ticks, neg_ticks = self.return_pos_and_neg_tick_locations()
+   103                                           			self.add_tick_label(pos_ticks)
+   104                                           			self.add_tick_label(neg_ticks)
+   105                                           
+   106                                           		else:
+   107                                           			print "axis direction %s is not defined" % self.direction
+
+File: pyglet_app_gl_axes.py
+Function: return_pos_and_neg_tick_locations at line 110
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   110                                           	@profile_code(PROFILE)
+   111                                           	def return_pos_and_neg_tick_locations(self):
+   112                                           		# start the tics with zero and go up to increasing (pos) and decreasing (neg) values.
+   113                                           		pos_ticks = np.concatenate((np.array([0]), self.tick_locations[self.tick_locations > 0]))
+   114                                           		neg_ticks = np.concatenate((np.array([0]), self.tick_locations[self.tick_locations < 0][::-1]))
+   115                                           		return pos_ticks, neg_ticks
+
+File: pyglet_app_gl_axes.py
+Function: add_tick_label at line 118
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   118                                           	@profile_code(PROFILE)
+   119                                           	def add_tick_label(self, tics):
+   120                                           
+   121                                           		# font_size = int(spacing / 10.0) - fonts are still distorted!
+   122                                           		font_size = 12
+   123                                           
+   124                                           		for j, tic in enumerate(tics):
+   125                                           			# skip zero tic - it will collide with the x-axis
+   126                                           			if tic == 0:
+   127                                           				continue
+   128                                           			if j % self.major_tick_every_x == 0: # major tick, every 'x-th' step.
+   129                                           				# place label to the left of the y-axis
+   130                                           				self.labels.append(pyglet.text.Label(str(tic),
+   131                                                                 font_name = 'Times New Roman',
+   132                                                                 font_size = font_size,
+   133                                                                 x = -1 * (self.major_length_position + 10), y = tic,
+   134                                                                 anchor_x = 'right', anchor_y = 'center'))
+
+File: pyglet_app_gl_axes.py
+Function: clear_axis_tics at line 137
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   137                                           	@profile_code(PROFILE)
+   138                                           	def clear_axis_tics(self):
+   139                                           		self.labels = []
+   140                                           		self.tick_locations = []
+
+File: pyglet_app_gl_axes.py
+Function: re_init_axis_tics at line 143
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   143                                           	@profile_code(PROFILE)
+   144                                           	def re_init_axis_tics(self, y_lims):
+   145                                           
+   146                                           		self.clear_axis_tics()
+   147                                           
+   148                                           		# calculate the new tic spacing, assume a 10% step size, and go to up to
+   149                                           		# 90% of the scale.
+   150                                           		axis_span = diff(y_lims)[0];
+   151                                           		spacing = int(float(axis_span) * 0.9 * 0.10)
+   152                                           
+   153                                           		# save new y_lims - deepcopy them!
+   154                                           		self.y_lims = deepcopy(y_lims)
+   155                                           		self.draw_axis_tics(y_lims, spacing, self.length)
+
+File: pyglet_app_gl_axes.py
+Function: draw_tic_lines at line 158
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   158                                           	@profile_code(PROFILE)
+   159                                           	def draw_tic_lines(self, tics):
+   160                                           		for j, tic in enumerate(tics):
+   161                                           			if j % self.major_tick_every_x == 0: # major tick
+   162                                           				glVertex3fv(gl_transform_list_to_GLfloat([-self.major_length_position, tic, 0]))
+   163                                           				glVertex3fv(gl_transform_list_to_GLfloat([ self.major_length_position, tic, 0]))
+   164                                           			else: # minor tick
+   165                                           				glVertex3fv(gl_transform_list_to_GLfloat([-self.minor_length_position, tic, 0]))
+   166                                           				glVertex3fv(gl_transform_list_to_GLfloat([ self.minor_length_position, tic, 0]))
+
+File: pyglet_app_gl_axes.py
+Function: draw at line 169
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   169                                           	@profile_code(PROFILE)
+   170                                           	def draw(self, current_y_lims):
+   171                                           
+   172                                           		if (self.y_lims != current_y_lims):
+   173                                           			self.re_init_axis_tics(current_y_lims)
+   174                                           
+   175                                           		glPushMatrix()
+   176                                           
+   177                                           		glLineWidth(2.0)
+   178                                           		glBegin(GL_LINES)
+   179                                           		glColor3f(1, 1, 1)
+   180                                           
+   181                                           		if self.direction == 1: # y axis ticks
+   182                                           			pos_ticks, neg_ticks = self.return_pos_and_neg_tick_locations()
+   183                                           			self.draw_tic_lines(pos_ticks)
+   184                                           			self.draw_tic_lines(neg_ticks)
+   185                                           
+   186                                           		glEnd()
+   187                                           
+   188                                           		glPopMatrix()
+   189                                           
+   190                                           		# TODO: this is a little messy, but I need to do this so that the axex
+   191                                           		# labels don't get distorted.
+   192                                           
+   193                                           		# the size of the current window
+   194                                           		win_height = float(self.settings_main_app.WINDOW_HEIGHT_CURRENT)
+   195                                           		win_width = float(self.settings_main_app.WINDOW_WIDTH_CURRENT)
+   196                                           		# the abs size of the current projection view
+   197                                           		y_diff_abs = abs(diff([float(self.settings_main_app.CURRENT_glOrtho_MATRIX[3]), float(self.settings_main_app.CURRENT_glOrtho_MATRIX[2])]))
+   198                                           		x_diff_abs = abs(diff([float(self.settings_main_app.CURRENT_glOrtho_MATRIX[1]), float(self.settings_main_app.CURRENT_glOrtho_MATRIX[0])]))
+   199                                           
+   200                                           		# draw the labels
+   201                                           		for j in range(len(self.labels)):
+   202                                           			glPushMatrix()
+   203                                           			# scale text in x & y direction. with x-scaling we will have to also move the label away from the tic marks.
+   204                                           			# glScalef(x_diff_abs/win_width, y_diff_abs/win_height, 1)
+   205                                           			# scale text in y direction only.
+   206                                           			glScalef(1, y_diff_abs/win_height, 1)
+   207                                           			# move text
+   208                                           			y_translate = float(self.labels[j].y) * ((win_height/y_diff_abs) - 1.0)
+   209                                           			glTranslatef(0, y_translate, 0)
+   210                                           			#print 'moving %s by %s' % (self.labels[j].text, y_translate)
+   211                                           			self.labels[j].draw()
+   212                                           			glPopMatrix()
+
+File: pyglet_app_gl_axes.py
+Function: get_range_through_zero at line 215
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   215                                           @profile_code(PROFILE)
+   216                                           def get_range_through_zero(max_value, step_size):
+   217                                               start = -1 * max_value
+   218                                               return arange(start- (start % step_size), max_value + step_size, step_size)
+
+File: pyglet_app_gl_axes.py
+Function: check_y_lims at line 221
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   221                                           @profile_code(PROFILE)
+   222                                           def check_y_lims(Y_LIMS, new_value, index):
+   223                                           	# make sure that the other y_lim value is not the same as the new one.
+   224                                           	other_index = (index + 1) % 2 
+   225                                           	if Y_LIMS[other_index] != new_value:
+   226                                           		Y_LIMS[index] = new_value
+   227                                           	else:
+   228                                           		print "Overlapping y limits are not allowed."
+   229                                           
+   230                                           	return Y_LIMS
+
+File: pyglet_app_gl_axes.py
+Function: axes_default_with_y_ticks at line 233
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   233                                           @profile_code(PROFILE)
+   234                                           def axes_default_with_y_ticks(settings_main_app, Y_LIMS):
+   235                                           
+   236                                           	py_axis = pyglet_axis()
+   237                                           	py_axis.settings_main_app = settings_main_app
+   238                                           	py_axis.setup(settings_main_app.WINDOW_WIDTH_CURRENT, settings_main_app.WINDOW_HEIGHT_CURRENT)
+   239                                           
+   240                                           	py_tics = pyglet_axis_tic_lines()
+   241                                           	py_tics.settings_main_app = settings_main_app
+   242                                           	py_tics.setup(settings_main_app.WINDOW_WIDTH_CURRENT, settings_main_app.WINDOW_HEIGHT_CURRENT, Y_LIMS, spacing = 10, length = 15, direction = 1, major_tick_every_x = 4)
+   243                                           
+   244                                           	return py_axis, py_tics
+
+File: pyglet_app_gl_helper.py
+Function: gl_enable_line_smoothing at line 13
+Total time: 5e-05 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    13                                           @profile_code(PROFILE)
+    14                                           def gl_enable_line_smoothing():
+    15                                           	# try to render a smooth line (if supported by driver)
+    16         1           15     15.0     30.0  	glEnable(GL_LINE_SMOOTH)
+    17         1           10     10.0     20.0  	glEnable(GL_BLEND)
+    18         1           13     13.0     26.0  	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    19         1           12     12.0     24.0  	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+
+File: pyglet_app_gl_helper.py
+Function: gl_setup_intial_data_and_color_vbos at line 23
+Total time: 0.000166 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    23                                           @profile_code(PROFILE)
+    24                                           def gl_setup_intial_data_and_color_vbos(data, colors, n_COORDINATES_PER_COLOR):
+    25                                           	
+    26                                           	''' create VBO for coordinates for each point, and upload initial values '''
+    27                                           	# create VBO for data
+    28         1           32     32.0     19.3  	vbo_id = gl_VBO_create()		
+    29                                           	# upload initial data to GPU
+    30         1           41     41.0     24.7  	gl_Bind_Buffer_data(vbo_id, data, GL_DYNAMIC_DRAW)
+    31                                           
+    32                                           	''' create VBO for colors for each point, and upload colors '''
+    33                                           	# create VBO for color
+    34         1           24     24.0     14.5  	color_id = gl_VBO_create()
+    35         1           37     37.0     22.3  	gl_Bind_Buffer_data(color_id, colors, GL_STATIC_DRAW)
+    36                                           
+    37                                           	''' set colors for each point '''  
+    38         1           32     32.0     19.3  	set_glColorPointer_default(n_COORDINATES_PER_COLOR)   
+    39                                           	
+    40                                           	''' return '''
+    41         1            0      0.0      0.0  	return vbo_id, color_id, colors
+
+File: pyglet_app_gl_helper.py
+Function: gl_setup_data_and_color_vbos at line 44
+Total time: 1.81818 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    44                                           @profile_code(PROFILE)
+    45                                           def gl_setup_data_and_color_vbos(data_single, colors_single, n_COORDINATES_PER_COLOR, NBR_PANELS, nPoints, upload_None = False):
+    46                                               
+    47         1           10     10.0      0.0      t0 = time()
+    48                                           
+    49                                               '''
+    50                                               output = calc_VBO_numbers(NBR_DATA_POINTS_PER_VBO, NBR_DATA_POINTS_PER_BUFFER, SECONDS_TO_VISUALIZE_PER_PANEL, scanrate)
+    51                                               NBR_DATA_POINTS_PER_VBO, NBR_VBOS_PER_PANEL, SECONDS_TO_VISUALIZE_PER_PANEL = output
+    52                                               NBR_DATA_POINTS_PER_BUFFER = NBR_DATA_POINTS_PER_BUFFER
+    53                                               '''
+    54                                           
+    55                                               # TODO: this is a temporary situation with one VBO per panel!
+    56         1            1      1.0      0.0      NBR_VBOS_PER_PANEL = 1
+    57         1            1      1.0      0.0      USE_UNIFORM_COLOR = False
+    58                                           
+    59                                               # copy same data and color into each panel and each VBO.
+    60         1            1      1.0      0.0      data = []
+    61         1            1      1.0      0.0      if not upload_None:
+    62                                                   data = replicate_data_for_panel_and_vbo(NBR_VBOS_PER_PANEL, NBR_PANELS, data_single)
+    63                                           
+    64         1      1812318 1812318.0     99.7      colors = create_initial_colors(NBR_PANELS, NBR_VBOS_PER_PANEL, nPoints, USE_UNIFORM_COLOR)
+    65                                           	# we can also just replicate the colors previously generated.
+    66                                               # colors = replicate_data_for_panel_and_vbo(NBR_VBOS_PER_PANEL, NBR_PANELS, colors_single)
+    67                                           
+    68         1          137    137.0      0.0      vbos_data = gl_create_vbos(NBR_PANELS, NBR_VBOS_PER_PANEL)
+    69         1           69     69.0      0.0      vbos_colors = gl_create_vbos(NBR_PANELS, NBR_VBOS_PER_PANEL)
+    70                                           
+    71                                               # old, original code.
+    72                                               # data, curr_x_offset = create_initial_data(NBR_PANELS, NBR_VBOS_PER_PANEL, NBR_DATA_POINTS_PER_VBO)
+    73                                               # colors = create_initial_colors(NBR_PANELS, NBR_VBOS_PER_PANEL)
+    74                                           
+    75         1           92     92.0      0.0      gl_initialize_vbos_with_start_data(NBR_PANELS, NBR_VBOS_PER_PANEL, vbos_data, data, GL_DYNAMIC_DRAW, upload_None, nPoints * n_COORDINATES_PER_VERTEX * BYTES_PER_POINT)
+    76         1         5438   5438.0      0.3      gl_initialize_vbos_with_start_data(NBR_PANELS, NBR_VBOS_PER_PANEL, vbos_colors, colors, GL_STATIC_DRAW)
+    77                                           
+    78                                               
+    79         1          116    116.0      0.0      print 'initial setup time was %f seconds.' %(time() - t0)
+    80                                               
+    81         1            1      1.0      0.0      return vbos_data, vbos_colors, colors
+
+File: pyglet_app_gl_helper.py
+Function: gl_initialize_vbos_with_start_data at line 84
+Total time: 0.005493 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    84                                           @profile_code(PROFILE)
+    85                                           def gl_initialize_vbos_with_start_data(NBR_PANELS, NBR_VBOS_PER_PANEL, vbos, data, mode = GL_DYNAMIC_DRAW, upload_None = False, memory_size = None):
+    86                                               
+    87         6            7      1.2      0.1      for panel in range(NBR_PANELS):
+    88         8           13      1.6      0.2          for vbo in range(NBR_VBOS_PER_PANEL):
+    89         4            3      0.8      0.1              if upload_None: # initialize empty memory (with None == NULL)
+    90         2           31     15.5      0.6                  glBindBuffer(GL_ARRAY_BUFFER, vbos[panel][vbo])
+    91         2           30     15.0      0.5                  glBufferData(GL_ARRAY_BUFFER, memory_size, None, mode)
+    92                                                       else:
+    93         2         5409   2704.5     98.5                  gl_Bind_Buffer_data(vbos[panel][vbo], data[panel][vbo], mode)
+
+File: pyglet_app_gl_helper.py
+Function: gl_create_vbos at line 96
+Total time: 0.000175 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    96                                           @profile_code(PROFILE)
+    97                                           def gl_create_vbos(NBR_PANELS, NBR_VBOS_PER_PANEL):
+    98                                           
+    99         6           15      2.5      8.6      vbos = [ [None] * int(NBR_VBOS_PER_PANEL) for i in xrange(NBR_PANELS) ]
+   100                                               
+   101         6            6      1.0      3.4      for panel in range(NBR_PANELS):
+   102         8           11      1.4      6.3          for vbo in range(NBR_VBOS_PER_PANEL):
+   103         4          141     35.2     80.6              vbos[panel][vbo] = gl_VBO_create()
+   104                                           
+   105         2            2      1.0      1.1      return vbos
+
+File: pyglet_app_gl_helper.py
+Function: gl_VBO_create at line 108
+Total time: 0.00015 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   108                                           @profile_code(PROFILE)
+   109                                           def gl_VBO_create():
+   110                                               # create VBO for data
+   111         6            6      1.0      4.0      vbo_id = GLuint()
+   112         6          139     23.2     92.7      glGenBuffers(1, pointer(vbo_id))
+   113         6            5      0.8      3.3      return vbo_id
+
+File: pyglet_app_gl_helper.py
+Function: gl_Bind_Buffer_data at line 116
+Total time: 0.005451 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   116                                           @profile_code(PROFILE)
+   117                                           def gl_Bind_Buffer_data(vbo_id, data, mode=GL_DYNAMIC_DRAW):
+   118         4           57     14.2      1.0  	glBindBuffer(GL_ARRAY_BUFFER, vbo_id)
+   119         4         5394   1348.5     99.0  	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, mode)
+
+File: pyglet_app_gl_helper.py
+Function: gl_Bind_Buffer_SubData at line 122
+Total time: 0.045588 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   122                                           @profile_code(PROFILE)
+   123                                           def gl_Bind_Buffer_SubData(vbo_id, pointer_offset, data):
+   124                                               
+   125                                               # bind buffer and overwrite position with offset 'pos_to_overwrite*BYTES_PER_POINT'
+   126                                               #try:
+   127       296         4477     15.1      9.8      glBindBuffer(GL_ARRAY_BUFFER, vbo_id)
+   128       296        41111    138.9     90.2      glBufferSubData(GL_ARRAY_BUFFER, pointer_offset, sizeof(data), data)
+
+File: pyglet_app_gl_helper.py
+Function: set_glColorPointer_default at line 135
+Total time: 0.007809 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   135                                           @profile_code(PROFILE)
+   136                                           def set_glColorPointer_default(n_COORDINATES_PER_COLOR = 3, offset_between_colors = 0, offset_to_first_color = 0):
+   137                                           	''' set colors for each point '''  
+   138                                           	''' you need to run: 
+   139                                           
+   140                                           		color_id = gl_VBO_create()
+   141                                           		gl_Bind_Buffer_data(color_id, colors, GL_STATIC_DRAW)
+   142                                           
+   143                                           		before. Or:
+   144                                           
+   145                                           		glBindBuffer(GL_ARRAY_BUFFER, color_id)
+   146                                           
+   147                                           	'''
+   148       657         7809     11.9    100.0  	glColorPointer(n_COORDINATES_PER_COLOR, GL_FLOAT, offset_between_colors, offset_to_first_color)
+
+File: pyglet_app_gl_helper.py
+Function: set_gl_defaults at line 151
+Total time: 5.7e-05 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   151                                           @profile_code(PROFILE)
+   152                                           def	set_gl_defaults(POINT_SIZE):
+   153         1           18     18.0     31.6  	glClearColor(0, 0, 0, 1.0)
+   154         1           15     15.0     26.3  	glPointSize(POINT_SIZE)
+   155                                           
+   156                                           	# enable GL_VERTEX_ARRAY & GL_COLOR_ARRAY state 
+   157         1           14     14.0     24.6  	glEnableClientState(GL_VERTEX_ARRAY)
+   158         1           10     10.0     17.5  	glEnableClientState(GL_COLOR_ARRAY)
+
+File: pyglet_app_gl_helper.py
+Function: gl_on_draw_default at line 161
+Total time: 0.313019 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   161                                           @profile_code(PROFILE)
+   162                                           def gl_on_draw_default(vbo_id, n_COORDINATES_PER_VERTEX, nPoints, mode):
+   163                                           	
+   164                                           	''' colors are defined and setup in 'setup_initial_points()'! '''
+   165                                             
+   166                                           
+   167                                           	''' setup point rendering '''
+   168                                           	# bind data VBO    
+   169       656         7046     10.7      2.3  	glBindBuffer(GL_ARRAY_BUFFER, vbo_id)
+   170                                           	
+   171       656          631      1.0      0.2  	offset_between_vertices = 0
+   172       656          516      0.8      0.2  	offset_to_first_vertex = 0
+   173       656         7480     11.4      2.4  	glVertexPointer(n_COORDINATES_PER_VERTEX, GL_FLOAT, offset_between_vertices, offset_to_first_vertex)
+   174                                           
+   175                                           	''' render points '''
+   176       656          630      1.0      0.2  	offset_to_first_vertex = 0    
+   177       656          526      0.8      0.2  	nbr_vertices_to_render = nPoints
+   178       656       296190    451.5     94.6  	glDrawArrays(mode, offset_to_first_vertex, nbr_vertices_to_render)
+
+File: pyglet_app_gl_helper.py
+Function: gl_Normalize_PushMATRIX_ClearBackground at line 181
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   181                                           @profile_code(PROFILE)
+   182                                           def gl_Normalize_PushMATRIX_ClearBackground():
+   183                                           
+   184                                           	glEnable(GL_NORMALIZE)
+   185                                           	glPushMatrix()
+   186                                           
+   187                                           	''' clear background '''
+   188                                           	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+
+File: pyglet_app_gl_helper.py
+Function: gl_ortho_projection at line 191
+Total time: 0.021605 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   191                                           @profile_code(PROFILE)
+   192                                           def gl_ortho_projection(left, right, bottom, top):
+   193                                           
+   194       492         5238     10.6     24.2  	glMatrixMode(GL_PROJECTION)
+   195                                           	# Reset world coordinates first 
+   196       492         4579      9.3     21.2  	glLoadIdentity()
+   197                                           
+   198                                           	# TODO: try / except here, so that we don't crash if bottom == top (or similar cases)
+   199       492          493      1.0      2.3  	try:
+   200                                           		# Then set them to what we want based on the new aspect ratio
+   201       492         6327     12.9     29.3  		glOrtho(left, right, bottom, top, -1.0, 1.0)
+   202                                           	except Exception, e:
+   203                                           			print "Error in 'gl_ortho_projection()': ", e
+   204                                           			print "left %s, right %s, bottom %s, top %s" %(left, right, bottom, top)
+   205                                           			pass
+   206       492         4968     10.1     23.0  	glMatrixMode(GL_MODELVIEW)
+
+File: pyglet_app_gl_helper.py
+Function: gl_transform_vector_of_buffers_to_GPU_format at line 210
+Total time: 0.627299 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   210                                           @profile_code(PROFILE)
+   211                                           def gl_transform_vector_of_buffers_to_GPU_format(raw_data, nbr_points_rendered_in_last_vbo, x_coords, nPointsToUpdate):
+   212                                               
+   213                                           	# extract correct x_values
+   214       148          343      2.3      0.1  	x_values = x_coords[nbr_points_rendered_in_last_vbo:nbr_points_rendered_in_last_vbo+nPointsToUpdate]
+   215                                           
+   216                                           	#import pdb; pdb.set_trace()
+   217                                           
+   218                                           	# number channel to loop over.
+   219       148          144      1.0      0.0  	nbr_channels = len(raw_data)
+   220                                           
+   221       148          111      0.8      0.0  	data = []
+   222       444          576      1.3      0.1  	for j in range(nbr_channels):
+   223       296       626022   2114.9     99.8  		data.append(gl_transform_list_to_GLfloat(create_2dim_list_from_arrays(x_values, raw_data[j])))
+   224                                           
+   225       148          103      0.7      0.0  	return data
+
+File: pyglet_app_gl_helper.py
+Function: gl_update_two_coordinates_in_VBO_static_view at line 228
+Total time: 0.678651 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   228                                           @profile_code(PROFILE)
+   229                                           def gl_update_two_coordinates_in_VBO_static_view(raw_data, vbo_id, c, nPoints, nPointsToUpdate, BYTES_PER_POINT, BYTES_PER_COORDINATE, NBR_CHANNELS, x_coords):
+   230                                           
+   231                                           	''' Updates x & y values in a single VBO.
+   232                                           		Works with multiple channels and one VBO only (05.07.2012).'''
+   233                                           	
+   234       148          202      1.4      0.0  	offset_to_start_from = c % (nPoints / nPointsToUpdate)
+   235       148          239      1.6      0.0  	nbr_points_rendered_in_last_vbo = int(offset_to_start_from * nPointsToUpdate)
+   236                                           
+   237                                           	# pointer to x3y3 coordinate pair (pointing at location of x3).
+   238       148          144      1.0      0.0  	pointer_offset = (nbr_points_rendered_in_last_vbo * BYTES_PER_POINT)
+   239                                           
+   240                                           	# pair each y coordinate with the corresponding x coordinate and transform data into GLFloat.
+   241       148       629286   4251.9     92.7  	data = gl_transform_vector_of_buffers_to_GPU_format(raw_data, nbr_points_rendered_in_last_vbo, x_coords, nPointsToUpdate)
+   242                                           
+   243                                           	# TODO: this will work with multiple channels, but only one VBO per channel right now.
+   244       444          786      1.8      0.1  	for channel in range(NBR_CHANNELS):
+   245                                           		# bind the VBO & overwrite the data.
+   246                                           		# TODO: this is a temporary situation with one VBO per panel!
+   247       296        47865    161.7      7.1  		gl_Bind_Buffer_SubData(vbo_id[channel][0], pointer_offset, data[channel])
+   248                                           
+   249       148          129      0.9      0.0  	return nbr_points_rendered_in_last_vbo
+
+File: pyglet_app_gl_helper.py
+Function: gl_update_single_coordinate_in_VOB_static_view at line 252
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   252                                           @profile_code(PROFILE)
+   253                                           def gl_update_single_coordinate_in_VOB_static_view(raw_data, vbo_id, c, nPoints, nPointsToUpdate, BYTES_PER_POINT, BYTES_PER_COORDINATE, NBR_CHANNELS, x_coords):
+   254                                           
+   255                                           	''' Updates y coordinates in a single VBO.
+   256                                           		Works with multiple channels and one VBO only (04.07.2012).'''
+   257                                           	
+   258                                           	offset_to_start_from = c % (nPoints / nPointsToUpdate)
+   259                                           	nbr_points_rendered_in_last_vbo = int(offset_to_start_from * nPointsToUpdate)
+   260                                           
+   261                                           	# offset to Y coordinate, assuming memory layout x1y1 x2y2
+   262                                           	pointer_offset_orig = (nbr_points_rendered_in_last_vbo * BYTES_PER_POINT) + BYTES_PER_COORDINATE
+   263                                           
+   264                                           	# TODO: this will work with multiple channels, but only one VBO per channel right now.
+   265                                           	for channel in range(NBR_CHANNELS):
+   266                                           
+   267                                           		# grab the data for this channel
+   268                                           		data = raw_data[channel]
+   269                                           
+   270                                           		# reset the pointer offset
+   271                                           		pointer_offset = pointer_offset_orig
+   272                                           
+   273                                           		# bind the VBO once
+   274                                           		# TODO: this is a temporary situation with one VBO per panel!
+   275                                           		glBindBuffer(GL_ARRAY_BUFFER, vbo_id[channel][0])
+   276                                           
+   277                                           		# go through list of points that have to be updated.
+   278                                           		for j in range(nPointsToUpdate):
+   279                                           			# add the 'per-point' offset for each iteration, except the first one, 
+   280                                           			# which is already at the correct position.
+   281                                           			if j > 0:
+   282                                           				pointer_offset = pointer_offset + BYTES_PER_POINT
+   283                                           
+   284                                           			# grab data point from list, make it a list again ([]), and transfer into 
+   285                                           			# GLfloat
+   286                                           			this_data = gl_transform_list_to_GLfloat([data[j]])
+   287                                           	
+   288                                           			# bind buffer and overwrite position with offset 'pointer_offset',
+   289                                           			# which points to the y coordinate only.
+   290                                           			glBufferSubData(GL_ARRAY_BUFFER, pointer_offset, sizeof(this_data), this_data)	
+   291                                           
+   292                                           	return offset_to_start_from
+
+File: pyglet_app_gl_helper.py
+Function: gl_setup_initial_data_and_color_and_vbos at line 295
+Total time: 2.77223 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   295                                           @profile_code(PROFILE)
+   296                                           def gl_setup_initial_data_and_color_and_vbos(nPoints, n_COORDINATES_PER_COLOR, NBR_CHANNELS, WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT):
+   297                                           
+   298                                           	# we can generate very different initial data - see 'initial_points'
+   299         1            1      1.0      0.0  	GENERATE_INITIAL = 4 # pre-allocate with 'None'
+   300                                           
+   301                                           	# initial data and colors
+   302         1       954011 954011.0     34.4  	data_single_vbo, colors_single_vbo, x_coords_entire_range = initial_points(nPoints, WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT, GENERATE_INITIAL)
+   303                                           
+   304                                           	# single channel solution.
+   305                                           	# self.vbo_data, self.vbo_colors, self.colors = gl_setup_intial_data_and_color_vbos(data_single_vbo, colors_single_vbo, n_COORDINATES_PER_COLOR)
+   306                                           
+   307                                           	# multiple channels solution.
+   308         1            1      1.0      0.0  	upload_None = False
+   309         1            1      1.0      0.0  	if GENERATE_INITIAL == 4:
+   310         1            1      1.0      0.0  		upload_None = True
+   311         1      1818219 1818219.0     65.6  	vbo_data, vbo_colors, colors = gl_setup_data_and_color_vbos(data_single_vbo, colors_single_vbo, n_COORDINATES_PER_COLOR, NBR_CHANNELS, nPoints, upload_None)
+   312                                           
+   313         1            1      1.0      0.0  	return vbo_data, vbo_colors, x_coords_entire_range
+
+File: pyglet_app_gl_helper_basic.py
+Function: gl_transform_list_to_GLfloat at line 6
+Total time: 0.284648 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     6                                           @profile_code(PROFILE)
+     7                                           def gl_transform_list_to_GLfloat(data):
+     8                                           	# transform data into GLfloat pointer format for GPU
+     9       375          353      0.9      0.1  	list_length = len(data)
+    10       375       284295    758.1     99.9  	return (GLfloat *list_length)(*data)
+
+File: pyglet_app_helper.py
+Function: generate_random_number_list_for_GPU at line 24
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    24                                           @profile_code(PROFILE)
+    25                                           def generate_random_number_list_for_GPU(nPoints, coordinates_per_point=2, Float=True, Min=1, Max=200):
+    26                                           	data = generate_random_number_list(nPoints, coordinates_per_point, Float, Min, Max)
+    27                                           	# transform data into GLfloat pointer format for GPU
+    28                                           	return gl_transform_list_to_GLfloat(data)
+
+File: pyglet_app_helper.py
+Function: generate_random_number_list at line 32
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    32                                           @profile_code(PROFILE)
+    33                                           def generate_random_number_list(nPoints, coordinates_per_point=2, Float=True, Min=1, Max=200):
+    34                                           
+    35                                           	# create list of [1:n_COORDINATES_PER_VERTEX] values for each 'nPoints'
+    36                                           	data = list()
+    37                                           
+    38                                           	if Float:
+    39                                           		rands = np.random.random(nPoints * coordinates_per_point)
+    40                                           	else:
+    41                                           		rands = np.random.randint(Min, Max, nPoints * coordinates_per_point)
+    42                                           
+    43                                           	for j in range(nPoints):
+    44                                           		for k in range(coordinates_per_point):
+    45                                           			data.append(rands[j*coordinates_per_point + k])
+    46                                           
+    47                                           	# return data
+    48                                           	return data
+
+File: pyglet_app_helper.py
+Function: calc_colors at line 52
+Total time: 1.4411 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    52                                           @profile_code(PROFILE)
+    53                                           def calc_colors(nPoints=1, USE_UNIFORM_COLOR = True):
+    54                                           # < 0.1ms
+    55                                           
+    56                                           	# generate well visible (not too dark) colors
+    57         3            3      1.0      0.0  	if not USE_UNIFORM_COLOR:
+    58         2            2      1.0      0.0  		while True:
+    59         8           24      3.0      0.0  			color = [random.random() for j in xrange(0, 3)]
+    60         2            8      4.0      0.0  			if sum(color) > 0.5:
+    61         2            3      1.5      0.0  				break
+    62                                           	else:
+    63                                           		# default color used for all points
+    64         1            1      1.0      0.0  		color = [1, 0, 0]
+    65                                           
+    66         3            5      1.7      0.0  	n_color_coord = len(color)
+    67                                           
+    68                                           	# create long list of uniform colors
+    69         3            3      1.0      0.0  	colors = []
+    70    153603       141072      0.9      9.8  	for j in xrange(nPoints):
+    71    614400       640941      1.0     44.5  		for i in range(n_color_coord):
+    72    460800       496183      1.1     34.4  			colors.append(color[i])
+    73                                           
+    74         3       162853  54284.3     11.3  	return gl_transform_list_to_GLfloat(colors)
+
+File: pyglet_app_helper.py
+Function: create_initial_colors at line 77
+Total time: 1.81229 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    77                                           @profile_code(PROFILE)
+    78                                           def create_initial_colors(nPanels, nVbosPerPanel, nPoints, USE_UNIFORM_COLOR = True):
+    79                                           
+    80         3           10      3.3      0.0      colors = [ [None] * int(nVbosPerPanel) for i in xrange(nPanels) ]
+    81                                               
+    82         3            2      0.7      0.0      for panel in range(nPanels):
+    83         4            8      2.0      0.0          for vbo in range(nVbosPerPanel):
+    84         2      1812271 906135.5    100.0              colors[panel][vbo] = calc_colors(nPoints, USE_UNIFORM_COLOR)
+    85                                               
+    86         1            1      1.0      0.0      return colors
+
+File: pyglet_app_helper.py
+Function: calc_points_zeros_None at line 89
+Total time: 0.000308 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    89                                           @profile_code(PROFILE)
+    90                                           def calc_points_zeros_None(nPoints, width_Max = 780):
+    91                                           
+    92         1            1      1.0      0.3  	Min = 20
+    93         1          307    307.0     99.7  	return None, None, np.arange(Min, width_Max, calc_stepsize(Min, width_Max, nPoints))
+
+File: pyglet_app_helper.py
+Function: calc_points_zeros at line 96
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    96                                           @profile_code(PROFILE)
+    97                                           def calc_points_zeros(nPoints, width_Max = 780):
+    98                                           
+    99                                           	Min = 20
+   100                                           
+   101                                           	x_coords = np.arange(Min, width_Max, calc_stepsize(Min, width_Max, nPoints))
+   102                                           	y_values = np.zeros(nPoints)
+   103                                           
+   104                                           	coords = []
+   105                                           
+   106                                           	for j in range(nPoints):
+   107                                           		coords.append(x_coords[j])
+   108                                           		coords.append(y_values[j])
+   109                                           
+   110                                           	return gl_transform_list_to_GLfloat(coords), coords, x_coords
+
+File: pyglet_app_helper.py
+Function: calc_points_equal_dist at line 113
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   113                                           @profile_code(PROFILE)
+   114                                           def calc_points_equal_dist(nPoints=1, width_Max = 780, height_Max = 780, interleaved = True):
+   115                                           
+   116                                           	# create list of x & y coordinates; x is followed by y. y is a random number.
+   117                                           	Min = 20
+   118                                           
+   119                                           	x_coords = np.arange(Min, width_Max, calc_stepsize(Min, width_Max, nPoints))
+   120                                           	y_values = np.random.randint(Min, height_Max, nPoints)
+   121                                           
+   122                                           	coords = []
+   123                                           
+   124                                           	# interleaved mode: x1y1 x2y2 x3y3
+   125                                           	if interleaved:
+   126                                           
+   127                                           		# slow:
+   128                                           		#for i, j in zip(x_coords, y_values):
+   129                                           		#    coords.append(i)
+   130                                           		#    coords.append(j)
+   131                                           
+   132                                           		# fast:
+   133                                           		for j in range(nPoints):
+   134                                           			coords.append(x_coords[j])
+   135                                           			coords.append(y_values[j])
+   136                                           
+   137                                           	# non-interleaved mode: x1x2x3 y1y2y3
+   138                                           	else:
+   139                                           		# all x coordinates first
+   140                                           		for j in range(nPoints):
+   141                                           			coords.append(x_coords[j])
+   142                                           
+   143                                           		# now all y coordinates
+   144                                           		for j in range(nPoints):
+   145                                           			coords.append(random.randint(Min, height_Max))
+   146                                           		
+   147                                           	return gl_transform_list_to_GLfloat(coords), coords, x_coords
+
+File: pyglet_app_helper.py
+Function: calc_points_equal_dist_scale_y_with_x at line 150
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   150                                           @profile_code(PROFILE)
+   151                                           def calc_points_equal_dist_scale_y_with_x(nPoints=1, width_Max = 780, height_Max = 780, interleaved = True):
+   152                                           	# create list of x & y coordinates; x is followed by y. y scales with the window size.
+   153                                           	Min = 20
+   154                                           	x_coords = np.arange(Min, width_Max, calc_stepsize(Min, width_Max, nPoints))
+   155                                           	y_scale = float(height_Max) / nPoints
+   156                                           	coords = []
+   157                                           
+   158                                           	# interleaved mode: x1y1 x2y2 x3y3
+   159                                           	if interleaved:
+   160                                           		for j in range(nPoints):
+   161                                           			coords.append(x_coords[j])
+   162                                           			coords.append(y_scale * (j+1))
+   163                                           
+   164                                           	# non-interleaved mode: x1x2x3 y1y2y3
+   165                                           	else:
+   166                                           		# all x coordinates first
+   167                                           		for j in range(nPoints):
+   168                                           			coords.append(x_coords[j])
+   169                                           
+   170                                           		# now all y coordinates
+   171                                           		for j in range(nPoints):
+   172                                           			coords.append(y_scale * (j+1))
+   173                                           
+   174                                           		
+   175                                           	# print coords
+   176                                           	return gl_transform_list_to_GLfloat(coords), coords, x_coords
+
+File: pyglet_app_helper.py
+Function: calc_points_equal_dist_zig_zag_y at line 179
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   179                                           @profile_code(PROFILE)
+   180                                           def calc_points_equal_dist_zig_zag_y(nPoints=1, width_Max = 780, height_Max = 780, y_offset = 0, interleaved = True):
+   181                                           	# create list of x & y coordinates; x is followed by y. y scales with the window size.
+   182                                           	Min = 20
+   183                                           	y_offset = 50
+   184                                           	x_coords = np.arange(Min, width_Max, calc_stepsize(Min, width_Max, nPoints))
+   185                                           	y_scale = float(height_Max) / nPoints
+   186                                           	coords = []
+   187                                           
+   188                                           	# show 100 zig-zags
+   189                                           	mod_value = int(nPoints / 100.0)
+   190                                           
+   191                                           	# interleaved mode: x1y1 x2y2 x3y3
+   192                                           	if interleaved:
+   193                                           		for j in range(nPoints):
+   194                                           			coords.append(x_coords[j])
+   195                                           			if j % mod_value == 0:
+   196                                           				coords.append(y_offset + 0.3 * (y_scale * j))
+   197                                           			else:
+   198                                           				coords.append(y_offset + (y_scale * j))
+   199                                           
+   200                                           	# non-interleaved mode: x1x2x3 y1y2y3
+   201                                           	else:
+   202                                           		# all x coordinates first
+   203                                           		for j in range(nPoints):
+   204                                           			coords.append(x_coords[j])
+   205                                           
+   206                                           		# now all y coordinates
+   207                                           		for j in range(nPoints):
+   208                                           			if j % 2 == 0:
+   209                                           				coords.append(y_offset + (y_scale * j) - (2.0/3 * y_scale))
+   210                                           			else:
+   211                                           				coords.append(y_offset + (y_scale * j))
+   212                                           		
+   213                                           	# print coords
+   214                                           	return gl_transform_list_to_GLfloat(coords), coords, x_coords
+
+File: pyglet_app_helper.py
+Function: calc_points_random at line 218
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   218                                           @profile_code(PROFILE)
+   219                                           def calc_points_random(n_COORDINATES_PER_VERTEX, nPoints=1):
+   220                                           	# create list of x & y coordinates; x is followed by y.
+   221                                           	return generate_random_number_list_for_GPU(nPoints, n_COORDINATES_PER_VERTEX, False, 100, 700)
+
+File: pyglet_app_helper.py
+Function: calc_stepsize at line 224
+Total time: 4e-06 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   224                                           @profile_code(PROFILE)
+   225                                           def calc_stepsize(MIN, MAX, nPoints):
+   226         1            4      4.0    100.0  	return float(MAX - MIN) / nPoints
+
+File: pyglet_app_helper.py
+Function: initial_points at line 230
+Total time: 0.953988 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   230                                           @profile_code(PROFILE)
+   231                                           def initial_points(nPoints, WINDOW_WIDTH_DEFAULT, WINDOW_HEIGHT_DEFAULT, GENERATE_INITIAL = 0):
+   232                                           
+   233         1            1      1.0      0.0  	make_win_dimensions_smaller_by_px = 20
+   234                                           
+   235                                           	# generate color vector for all points.	
+   236         1       953655 953655.0    100.0  	colors = calc_colors(nPoints)
+   237                                           
+   238         1            2      2.0      0.0  	if GENERATE_INITIAL == 0: # zeros.
+   239                                           		data, coords, x_coords = calc_points_zeros(nPoints, WINDOW_WIDTH_DEFAULT - make_win_dimensions_smaller_by_px)
+   240                                           
+   241         1            1      1.0      0.0  	elif GENERATE_INITIAL == 1: # data whose range is inside the current window dimensions.
+   242                                           		data, coords, x_coords = calc_points_equal_dist(nPoints, WINDOW_WIDTH_DEFAULT - make_win_dimensions_smaller_by_px, WINDOW_HEIGHT_DEFAULT - make_win_dimensions_smaller_by_px)
+   243                                           
+   244         1            1      1.0      0.0  	elif GENERATE_INITIAL == 2: # linearly increasing y values. 
+   245                                           		data, coords, x_coords = calc_points_equal_dist_scale_y_with_x(nPoints, WINDOW_WIDTH_DEFAULT - make_win_dimensions_smaller_by_px, WINDOW_HEIGHT_DEFAULT - make_win_dimensions_smaller_by_px)
+   246                                           
+   247         1            1      1.0      0.0  	elif GENERATE_INITIAL == 3: # line going up and down in a zig-zag fashion.
+   248                                           		data, coords, x_coords = calc_points_equal_dist_zig_zag_y(nPoints, WINDOW_WIDTH_DEFAULT - make_win_dimensions_smaller_by_px, WINDOW_HEIGHT_DEFAULT/2)
+   249                                           
+   250         1            1      1.0      0.0  	elif GENERATE_INITIAL == 4: # use 'None'
+   251         1          324    324.0      0.0  		data, coords, x_coords = calc_points_zeros_None(nPoints, WINDOW_WIDTH_DEFAULT - make_win_dimensions_smaller_by_px)
+   252                                           
+   253                                           	
+   254         1            2      2.0      0.0  	return data, colors, x_coords
+
+File: pyglet_app_helper.py
+Function: create_2dim_list_from_arrays at line 258
+Total time: 0.276933 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   258                                           @profile_code(PROFILE)
+   259                                           def create_2dim_list_from_arrays(x, y):
+   260                                               
+   261       296          268      0.9      0.1      data = []
+   262    151848       135011      0.9     48.8      for i, j in zip(x, y):
+   263    151552       141443      0.9     51.1          data.extend([i, j])
+   264                                                   
+   265       296          211      0.7      0.1      return data
+
+File: pyglet_app_helper2.py
+Function: calc_VBO_numbers at line 8
+Total time: 1.9e-05 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     8                                           @profile_code(PROFILE)
+     9                                           def calc_VBO_numbers(NBR_DATA_POINTS_PER_VBO, NBR_DATA_POINTS_PER_BUFFER, SECONDS_TO_VISUALIZE_PER_PANEL, scanrate):
+    10                                               
+    11         1           13     13.0     68.4      NBR_DATA_POINTS_PER_VBO = ceil(NBR_DATA_POINTS_PER_VBO / NBR_DATA_POINTS_PER_BUFFER) * NBR_DATA_POINTS_PER_BUFFER
+    12                                               
+    13                                               # calculate the number of VBOs that are need to display all data
+    14         1            2      2.0     10.5      NBR_VBOS_PER_PANEL = ceil(SECONDS_TO_VISUALIZE_PER_PANEL * scanrate / NBR_DATA_POINTS_PER_VBO)
+    15                                               
+    16                                               # how many buffers of size 'NBR_DATA_POINTS_PER_BUFFER' does each panel hold?
+    17                                               # NBR_BUFFERS_PER_PANEL = NBR_VBOS_PER_PANEL * NBR_DATA_POINTS_PER_VBO / NBR_DATA_POINTS_PER_BUFFER
+    18                                               
+    19                                               # update 'SECONDS_TO_VISUALIZE_PER_PANEL' to its true value
+    20         1            1      1.0      5.3      SECONDS_TO_VISUALIZE_PER_PANEL = NBR_VBOS_PER_PANEL * NBR_DATA_POINTS_PER_VBO / scanrate
+    21                                               
+    22                                               # add one VBO to each panel since we want to smoothly add new data points.
+    23         1            1      1.0      5.3      NBR_VBOS_PER_PANEL += 1
+    24                                               
+    25         1            2      2.0     10.5      return int(NBR_DATA_POINTS_PER_VBO), int(NBR_VBOS_PER_PANEL), SECONDS_TO_VISUALIZE_PER_PANEL
+
+File: pyglet_app_helper2.py
+Function: setup_tmp_directory at line 28
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    28                                           @profile_code(PROFILE)
+    29                                           def setup_tmp_directory(PLUGIN_NAME, TMP_DIR = False):
+    30                                           
+    31                                           	if not TMP_DIR:
+    32                                           		# where's your temporary directory? mmap will write into it.
+    33                                           		if os.name == 'nt': # windows systems
+    34                                           			# make sure you use double '\\' to separate directories 
+    35                                           			TMP_DIR = 'c:\\temp'
+    36                                           		else: # unix systems
+    37                                           			TMP_DIR = '/tmp'
+    38                                           
+    39                                           	TMP_DIR = TMP_DIR + os.sep + PLUGIN_NAME
+    40                                           	return TMP_DIR
+
+File: pyglet_app_helper2.py
+Function: replicate_data_for_panel_and_vbo at line 43
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    43                                           @profile_code(PROFILE)
+    44                                           def replicate_data_for_panel_and_vbo(NBR_VBOS_PER_PANEL, NBR_PANELS, data_single):
+    45                                           
+    46                                               data = [ [None] * int(NBR_VBOS_PER_PANEL) for i in xrange(NBR_PANELS) ]
+    47                                               for panel in range(NBR_PANELS):
+    48                                                   for vbo in range(NBR_VBOS_PER_PANEL):
+    49                                                       data[panel][vbo] = deepcopy(data_single)
+    50                                           
+    51                                               return data
+
+File: pyglet_app_line_update_cheetah_with_mmap.py
+Function: setup at line 173
+Total time: 2.99076 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   173                                           	def setup(self):
+   174                                           
+   175                                           		''' set variables based on init() values. '''
+   176                                           		self.Y_LIMS = [0, self.SETTINGS.WINDOW_HEIGHT_DEFAULT]
+   177         1            5      5.0      0.0  		self.SETTINGS.WINDOW_WIDTH_CURRENT = self.SETTINGS.WINDOW_WIDTH_DEFAULT
+   178         1            3      3.0      0.0  		self.SETTINGS.WINDOW_HEIGHT_CURRENT = self.SETTINGS.WINDOW_HEIGHT_DEFAULT
+   179         1            2      2.0      0.0  
+   180                                           		# add 'abs_plugin_ID' to plugin name.
+   181                                           		self.PLUGIN_NAME = self.PLUGIN_NAME + '-' + str(self.abs_plugin_ID)
+   182         1            5      5.0      0.0  
+   183                                           
+   184                                           		''' setup mmap or random data interface '''
+   185                                           		status, self.MMAP, self.DATA = setup_incoming_data_interface(self.USE_MMAP, self.PLUGIN_NAME, self.NBR_CHANNELS, self.nPointsToUpdate, self.nPoints, self.SETTINGS.WINDOW_WIDTH_CURRENT, self.SETTINGS.WINDOW_HEIGHT_CURRENT)
+   186         1          118    118.0      0.0  		if not status:
+   187         1            1      1.0      0.0   			sys.exit(1)
+   188                                           
+   189                                           
+   190                                           		''' setup plot queue '''
+   191                                           		self.plot_queue = setup_plotting_queue()
+   192         1           29     29.0      0.0  
+   193                                           
+   194                                           		''' generate initial positions & colors, and setup VOBs '''
+   195                                           		self.vbo_data, self.vbo_colors, self.x_coords = \
+   196                                           			gl_setup_initial_data_and_color_and_vbos(self.nPoints, n_COORDINATES_PER_COLOR, self.NBR_CHANNELS, self.SETTINGS.WINDOW_WIDTH_DEFAULT, self.SETTINGS.WINDOW_HEIGHT_DEFAULT)
+   197         1      2772271 2772271.0     92.7  
+   198                                           
+   199                                           		''' horizontal and vertical lines '''
+   200                                           		# horizontal line showing the threshold 
+   201                                           		if self.SHOW_HORIZONTAL_LINE:
+   202         1            2      2.0      0.0  			self.line_hor = line_default_horizontal(self.SETTINGS.WINDOW_WIDTH_DEFAULT)
+   203                                           
+   204                                           		# vertical line showing which data point is going to be update next 
+   205                                           		if self.SHOW_VERTICAL_LINE:
+   206         1            2      2.0      0.0  			self.line_ver = line_default_vertical(self.SETTINGS.WINDOW_HEIGHT_CURRENT, self.x_coords)
+   207         1          316    316.0      0.0  
+   208                                           
+   209                                           		''' axes '''
+   210                                           		if self.SHOW_AXES:
+   211         1            2      2.0      0.0  			self.coord_axes, self.y_axis_tics = axes_default_with_y_ticks(self.SETTINGS, self.Y_LIMS)
+   212                                           
+   213                                           
+   214                                           		''' other stuff '''
+   215                                           		# set default gl modes
+   216                                           		set_gl_defaults(self.POINT_SIZE)
+   217         1           69     69.0      0.0  
+   218                                           		# try to render a smooth line (if supported by driver)
+   219                                           		gl_enable_line_smoothing()
+   220         1           62     62.0      0.0  
+   221                                           		# set window title
+   222                                           		win_title = 'generating random data'
+   223         1            1      1.0      0.0  		if self.USE_MMAP:
+   224         1            1      1.0      0.0  			win_title = 'receiving data from matlab'
+   225                                           		nbr_points_shown = ' -- showing %s points per panel.' % self.nPoints
+   226         1            4      4.0      0.0  		self.set_caption(self.PLUGIN_NAME + ' -- ' + win_title + nbr_points_shown)
+   227         1          283    283.0      0.0  
+   228                                           		# hide mouse - disabled.
+   229                                           		# self.set_mouse_visible(False)
+   230                                           
+   231                                           		# schedule the 'update()' method to be called each 'update_interval'
+   232                                           		pyglet.clock.schedule_interval(self.update, self.update_interval)
+   233         1        18245  18245.0      0.6  
+   234                                           		# Create a font for our FPS clock
+   235                                           		ft = pyglet.font.load('Arial', 28)
+   236         1       172805 172805.0      5.8  		self.fps_display = pyglet.clock.ClockDisplay(font = ft, interval=0.125, format='FPS %(fps).2f')
+
+File: pyglet_app_line_update_cheetah_with_mmap.py
+Function: update at line 240
+Total time: 0.813205 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   240                                           	def update(self, dt):
+   241                                           
+   242                                           		# update nPointsToUpdate points per `update()` call
+   243                                           		# TODO: handle cases where 'nPoints' is not a multiple of 'nPointsToUpdate'
+   244                                           		# (need to wrap around at the end of the list)
+   245                                           
+   246                                           
+   247                                           		''' START  'DATA MANAGEMENT'  '''
+   248                                           		# pick up new data from mmap or other system (i.e. generated)
+   249                                           		new_data, new_data_is_empty, nbr_buffers_per_mmap_file = request_new_data(self.USE_MMAP, self.DATA, self.MMAP)
+   250       149       118570    795.8     14.6  
+   251                                           		# don't add empty data to the queue    
+   252                                           		# don't use 'NBR_INDEPENDENT_CHANNELS' here, because we might be skipping this channel
+   253                                           		if sum(new_data_is_empty) != len(new_data):
+   254       149          833      5.6      0.1  			#print len(new_data[0][0])
+   255                                           			#print new_data[1][0]
+   256                                           			append_data_to_plot_queue(self.plot_queue, new_data, nbr_buffers_per_mmap_file)
+   257       149         3839     25.8      0.5  		''' END  'DATA MANAGEMENT'  '''
+   258                                           
+   259                                           
+   260                                           		''' debugging
+   261                                           		if new_data_is_empty[0] == 1:
+   262                                           			print 'new data is empty!'
+   263                                           		else: 
+   264                                           			print ' NOT EMPTY!'
+   265                                           
+   266                                           		'''
+   267                                           
+   268                                           		# Quit here if we are not supposed to draw anything new. This way the queue
+   269                                           		# keeps growing and we don't miss anything.
+   270                                           		if not self.DO_DRAW:
+   271       149          210      1.4      0.0  			return
+   272                                           
+   273                                           		# don't purge entire queue - keep at least 'MIN_NBR_BUFFERS_NECESSARY_FOR_UPDATE' elements in queue.
+   274                                           		# this will give us a smoother plotting experience.
+   275                                           		queue_length = len(self.plot_queue)
+   276       149          222      1.5      0.0  		if queue_length < MIN_NBR_BUFFERS_NECESSARY_FOR_UPDATE:
+   277       149          189      1.3      0.0  			return	
+   278        75           80      1.1      0.0  
+   279                                           
+   280                                           		''' START  'dequeue buffers and prepare them for plotting'  '''
+   281                                           		# plot ALL buffers currently in queue.
+   282                                           		for j in xrange(queue_length):
+   283       222          324      1.5      0.0  
+   284                                           			# dequeue buffers and update VBOs
+   285                                           			# raw_data is an array of channels containing the data per channel.
+   286                                           			raw_data = get_data_from_plot_queue(self.plot_queue)
+   287       148         1772     12.0      0.2  			#print raw_data
+   288                                           		
+   289                                           			# update y values in main VBO - do this for each channel!
+   290                                           			current_pos_in_memory = gl_update_two_coordinates_in_VBO_static_view(raw_data, self.vbo_data, self.c, self.nPoints, self.nPointsToUpdate, BYTES_PER_POINT, BYTES_PER_COORDINATE, self.NBR_CHANNELS, self.x_coords)
+   291       148       681518   4604.9     83.8  
+   292                                           			# Update position of vertical line - move it one 'nPointsToUpdate' 
+   293                                           			# buffer ahead of currently updated position. calc modulo 'nPoints', 
+   294                                           			# so that the position is in the range from 0 to nPoints.
+   295                                           			self.line_ver.curr_pos = (current_pos_in_memory + self.nPointsToUpdate) % self.nPoints
+   296       148          358      2.4      0.0  			
+   297                                           			# increase counter and modulo 'nPoints', so that 'c' doesn't grow out of bounds.
+   298                                           			self.c = (self.c + 1) % self.nPoints
+   299       148          271      1.8      0.0  		''' END 'dequeue buffers and prepare them for plotting'  '''
+   300                                           
+   301                                           		
+   302                                           		# set the resulting vertical line position.
+   303                                           		if self.SHOW_VERTICAL_LINE:
+   304        74           87      1.2      0.0  			self.line_ver.gl_update_line_x_value(self.line_ver.curr_pos)
+   305        74         4794     64.8      0.6  
+   306                                           		# auto-purge plot queue if feature is activated and limit is reached.
+   307                                           		if self.plot_queue_purge_if_size_limit_reached and len(self.plot_queue) > self.plot_queue_size_limit:
+   308        74          138      1.9      0.0  			self.plot_queue = setup_plotting_queue()
+
+File: pyglet_app_line_update_cheetah_with_mmap.py
+Function: on_draw at line 312
+Total time: 0.487117 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   312                                           	def on_draw(self):
+   313                                           
+   314                                           		''' clear background '''	
+   315                                           		glEnable(GL_NORMALIZE)
+   316       164         2623     16.0      0.5  		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+   317       164         8995     54.8      1.8  
+   318                                           
+   319                                           		height_per_panel = (self.SETTINGS.WINDOW_HEIGHT_CURRENT / self.NBR_CHANNELS)
+   320       164          422      2.6      0.1  		for panel in range(self.NBR_CHANNELS):
+   321       492         1190      2.4      0.2  
+   322                                           			''' start - panel data '''
+   323                                           			glPushMatrix()
+   324       328         3361     10.2      0.7  
+   325                                           			glViewport(0, panel * height_per_panel, self.SETTINGS.WINDOW_WIDTH_CURRENT, height_per_panel)
+   326       328         4663     14.2      1.0  			# apply current scaling (if any) to the active panel
+   327                                           			if self.SETTINGS.CURRENT_glOrtho_MATRIX:
+   328       328          588      1.8      0.1  				gl_ortho_projection(self.SETTINGS.CURRENT_glOrtho_MATRIX[0], self.SETTINGS.CURRENT_glOrtho_MATRIX[1], self.SETTINGS.CURRENT_glOrtho_MATRIX[2], self.SETTINGS.CURRENT_glOrtho_MATRIX[3])
+   329       328        18963     57.8      3.9  
+   330                                           			# draw lines #
+   331                                           			''' draw vertical line first '''
+   332                                           			if self.SHOW_VERTICAL_LINE:
+   333       328          535      1.6      0.1  				self.line_ver.draw()
+   334       328        35384    107.9      7.3  
+   335                                           
+   336                                           			''' draw data plot '''
+   337                                           			glLineWidth(3.0)
+   338       328         3761     11.5      0.8  			# TODO: this is a temporary situation with one VBO per panel!
+   339                                           			glBindBuffer(GL_ARRAY_BUFFER, self.vbo_colors[panel][0])
+   340       328         3914     11.9      0.8  			set_glColorPointer_default(n_COORDINATES_PER_COLOR)
+   341       328         6082     18.5      1.2  			# TODO: this is a temporary situation with one VBO per panel!  
+   342                                           			gl_on_draw_default(self.vbo_data[panel][0], n_COORDINATES_PER_VERTEX, self.nPoints, GL_LINE_STRIP)
+   343       328       299705    913.7     61.5  
+   344                                           			''' draw horizontal line - which is made off 2 points only '''
+   345                                           			if self.SHOW_HORIZONTAL_LINE:
+   346       328          553      1.7      0.1  				self.line_hor.draw()
+   347                                           
+   348                                           			glPopMatrix()
+   349       328         6493     19.8      1.3  			''' end - panel data '''
+   350                                           
+   351                                           			# draw axes, tics and labels #
+   352                                           			if self.SHOW_AXES:
+   353       328          547      1.7      0.1  				self.coord_axes.draw()
+   354                                           				self.y_axis_tics.draw(self.Y_LIMS)
+   355                                           
+   356                                           
+   357                                           
+   358                                           
+   359                                           		
+   360                                           		# go back to main perspective and show the FPT
+   361                                           		glPushMatrix()
+   362       164         1624      9.9      0.3  		glViewport(0, 0, self.SETTINGS.WINDOW_WIDTH_CURRENT, self.SETTINGS.WINDOW_HEIGHT_CURRENT)
+   363       164         2241     13.7      0.5  		gl_ortho_projection(self.RESIZE_OFFSET_X, self.SETTINGS.WINDOW_WIDTH_CURRENT, self.RESIZE_OFFSET_Y, self.SETTINGS.WINDOW_HEIGHT_CURRENT)
+   364       164         9252     56.4      1.9  		# draw FPS  #
+   365                                           		if self.SHOW_FPS:
+   366       164          270      1.6      0.1  			self.fps_display.draw()
+   367       164        74197    452.4     15.2  		glPopMatrix()
+

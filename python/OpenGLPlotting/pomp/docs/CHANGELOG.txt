@@ -1,0 +1,72 @@
+''' TODO:
+
+	- 	fix drawing bug in 'pyglet_app_screen_update_elements_moving_line'
+	- 	add autoscaling of axes.
+
+	-	GUI becomes very slow if initialized with big window height, because
+		rendering the axes becomes very slow. 
+		-> We need to rewrite the axes rendering code.
+
+	-	add support for more than 50000 points, using multiple VBOs. see old code.
+
+	-	show 1x, 2x, 3x threshold (as line)
+	- 	allow to show lower threshold (and set it manually) / allow multiple thresholds
+	-	add raw channel plot above thresholded stuff
+	-	fix resize behaviour of:
+	 			tic labels, so that text stays proportional
+	- 	allow to define offset for threshold
+	- 	allow to shift graph up and down.
+
+	- 	fix all temporary fixed marked with TODO.
+	-	log CPU / system usage of this program (if possible)
+
+
+	DONE:
+	- 	allow to set threshold by hand (command line)
+	- 	allow to zoom in on plot. data range is ~ 0 - 150 / 200. but currently
+		all data is stuck in the lower quarter of the screen
+	- 	do proper zoom. 
+	-		# TODO: this is a quick and dirty implementation of y zooming. 
+			# if the window size changes, we lose the zoom value.
+	- 	add scale bars if possible (tick mark for 10, 20, 30, in y direction)
+	-	remove mmap dependencies
+	- 	why is the matlab queue of the plugin suddenly growing? do we need to pick
+		up and process multiple buffers at the same time?
+	-	create moving vertical line which indicates which data point is currently
+		being updated
+	-	run multiple instances of this plugin (identified by abs_plugin_ID)
+	-	fix resize behaviour of:
+			- tic mark positions, so that the spacing is adapts to zooming in
+			  vertical line extent
+			- don't let y-lims overlap
+			- don't distort FPS display.
+	-	toggle visiblity of axes.
+	-	toggle visiblity of horizontal line.
+	-	fix y limit change bug: need to write new settings back to 'self.SETTINGS.CURRENT_glOrtho_MATRIX'
+	-	initialize tics automatically -> reduces CPU load with large windows because we only render 10 tics or so. 
+	-	use 'y + ctrl' to set y limits through nice gui interface.
+	-	integrated tkinter for simple dialogs.
+	- 	clean up Screen / App confusion.
+	-	move data polling and enqueuing code to BasicApp.
+	-	create 'ApplicationTemplate' class which consists of the most essential 
+		methods and properties. This makes 'BasicApp' leaner.
+	-	move plot_queue purging code to 'BasicApp'
+	-	fix title setting error.
+	-	fix horizontal line moving bug.
+	-	take screenshot by pressing 's' button.
+	- 	fix initial plotting bug when not all of the line is filled with data yet.
+	-	switch between plotting modes using 'm'
+	- 	make color configurable for each plugin (value or random)
+	- 	fix 'nbr Points drawing' bug in 'calc_nbr_points_to_draw'
+	- 	save color used in SETTINGS.COLOR_USED (per panel!)
+	- 	modified 'gl_transform_vector_of_buffers_to_GPU_format' to accept x & y values only
+	- 	wrote 'pyglet_app_screen_update_elements_moving_line' which does the right to left screen update
+	- 	see 'pCtrlLFP_moving_line' if you want to use 'pyglet_app_screen_update_elements_moving_line'
+	- 	allow switching between plotting modes using 'p'
+
+	DEBUGGING:
+	-	import pdb; pdb.set_trace()
+
+'''
+
+

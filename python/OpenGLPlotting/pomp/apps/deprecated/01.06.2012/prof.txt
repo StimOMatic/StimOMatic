@@ -1,0 +1,903 @@
+Timer unit: 1e-06 s
+
+File: pyglet_vbo_test7.py
+Function: generate_line_segment_zeros at line 237
+Total time: 5.2676 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   237                                           @do_profile(DO_PROFILE)
+   238                                           def generate_line_segment_zeros(x_shift=SHIFT_X_BY, min_x=X_MIN, max_x=X_MAX, step_size=STEPSIZE_X):
+   239                                               ''' same as 'generate_line_segment' but will generate zero y-values '''
+   240                                           
+   241       146          121      0.8      0.0      zeros = True
+   242       146        18586    127.3      0.4      x, y = generate_points(min_x, max_x, x_shift, step_size, zeros)
+   243       146      5248897  35951.3     99.6      return create_2dim_list_from_arrays(x, y)
+
+File: pyglet_vbo_test7.py
+Function: generate_line_segment at line 246
+Total time: 2.37141 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   246                                           @do_profile(DO_PROFILE)
+   247                                           def generate_line_segment(x_shift=SHIFT_X_BY, min_x=X_MIN, max_x=X_MAX, step_size=STEPSIZE_X):
+   248                                           # ~ 1ms
+   249        64        42083    657.5      1.8      x, y = generate_points(min_x, max_x, x_shift, step_size)
+   250        64      2329325  36395.7     98.2      return create_2dim_list_from_arrays(x, y)
+
+File: pyglet_vbo_test7.py
+Function: generate_numbers_for_x_vector at line 253
+Total time: 0.036775 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   253                                           @do_profile(DO_PROFILE)
+   254                                           def generate_numbers_for_x_vector(x, zeros = False):
+   255                                               
+   256       210          285      1.4      0.8      nbr_elements = len(x)
+   257                                               
+   258       210          200      1.0      0.5      if zeros: # generate zeros
+   259                                                   # TODO: check whether we need to add offset (Y_OFFSET_PANEL + 1)
+   260       146         1407      9.6      3.8          y = np.zeros(nbr_elements)# + Y_OFFSET_PANEL + 1
+   261                                               
+   262                                               else: # generate random values.
+   263                                                   # generate a vector of random numbers in range [0, 1] 
+   264                                                   # y = [random.random() for i in range(nbr_elements)]
+   265        64        13775    215.2     37.5          y = np.random.random(nbr_elements)
+   266                                               
+   267                                                   # generate a scaling vector of random numbers in range [1, NOISE_SIZE]
+   268                                                   # this vector will scale each data point
+   269                                                   # y_scale = [random.randint(1, NOISE_SIZE) for i in range(nbr_elements)]
+   270        64        13789    215.5     37.5          y_scale = np.random.randint(1, NOISE_SIZE_NP, nbr_elements)
+   271                                               
+   272                                                   # generate a spike every 'GENERATE_SPIKE_EVERY_N_POINTS' data points
+   273                                                   # generate an intial offset so that spikes don't occur at same position.
+   274        64          101      1.6      0.3          y_scale_offset = np.random.randint(1, GENERATE_SPIKE_EVERY_N_POINTS)
+   275        64          913     14.3      2.5          y_scale[GENERATE_SPIKE_EVERY_N_POINTS - 1 + y_scale_offset::GENERATE_SPIKE_EVERY_N_POINTS] = SPIKE_SIZE
+   276                                               
+   277                                                   # rescale each data point accordingly
+   278        64         6046     94.5     16.4          y = (y * y_scale) + SHIFT_Y_BY + Y_OFFSET_PANEL
+   279                                               
+   280       210          259      1.2      0.7      return y
+
+File: pyglet_vbo_test7.py
+Function: generate_points at line 283
+Total time: 0.058529 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   283                                           @do_profile(DO_PROFILE)
+   284                                           def generate_points(min_x=X_MIN, max_x=X_MAX, x_shift=SHIFT_X_BY, step_size = STEPSIZE_X, zeros = False):
+   285                                           # < 0.1ms
+   286                                           
+   287                                               # 'range' can only generate integer arrays
+   288                                               # x = np.array(range(min_x, max_x), int)
+   289                                               # use 'arrange' from numpy to generate a float array
+   290       210        12739     60.7     21.8      x = np.arange(min_x, max_x, step_size)
+   291       210         5827     27.7     10.0      x = x + x_shift
+   292                                           
+   293       210        39785    189.5     68.0      y = generate_numbers_for_x_vector(x, zeros)
+   294                                           
+   295       210          178      0.8      0.3      return x, y
+
+File: pyglet_vbo_test7.py
+Function: create_2dim_list_from_arrays at line 298
+Total time: 10.4026 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   298                                           @do_profile(DO_PROFILE)
+   299                                           def create_2dim_list_from_arrays(x, y):
+   300                                               
+   301      5994         6410      1.1      0.1      data = []
+   302   5117802      4963628      1.0     47.7      for i, j in zip(x, y):
+   303   5111808      5427693      1.1     52.2          data.extend([i, j])
+   304                                                   
+   305      5994         4901      0.8      0.0      return data
+
+File: pyglet_vbo_test7.py
+Function: transform_line_points_to_data_format_for_GPU at line 308
+Total time: 3.03833 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   308                                           @do_profile(DO_PROFILE)
+   309                                           def transform_line_points_to_data_format_for_GPU(line_points):
+   310                                           # ~ 0.2ms
+   311                                               #print "nbr data points generated: " + str(len(line_points) / 2)
+   312      5994      3038328    506.9    100.0      return (GLfloat*len(line_points))(*line_points)
+
+File: pyglet_vbo_test7.py
+Function: generate_color_for_segment at line 315
+Total time: 0.000196 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   315                                           @do_profile(DO_PROFILE)
+   316                                           def generate_color_for_segment():
+   317                                           # < 0.1ms
+   318                                               # generate well visible (not too dark) colors
+   319        66           51      0.8     26.0      if not USE_UNIFORM_COLOR:
+   320                                                   while True:
+   321                                                       color = [random.random() for j in range(0, 3)]
+   322                                                       if sum(color) > 0.5:
+   323                                                           break
+   324                                               else:
+   325        66           85      1.3     43.4          color = [1, 0, 0]
+   326                                           
+   327        66           60      0.9     30.6      return color
+
+File: pyglet_vbo_test7.py
+Function: create_VBO at line 330
+Total time: 0.000974 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   330                                           @do_profile(DO_PROFILE)
+   331                                           def create_VBO():
+   332                                           # < 0.1ms
+   333                                           
+   334        66           60      0.9      6.2      vbo_id = GLuint()
+   335                                               
+   336                                               # generates 1 buffer object names, which are stored in pointer(vbo_id)
+   337        66          863     13.1     88.6      glGenBuffers(1, pointer(vbo_id))
+   338                                           
+   339        66           51      0.8      5.2      return vbo_id
+
+File: pyglet_vbo_test7.py
+Function: create_VBO_send_data_to_VBO at line 342
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   342                                           @do_profile(DO_PROFILE)
+   343                                           def create_VBO_send_data_to_VBO(data):
+   344                                           # < 0.1ms
+   345                                           
+   346                                               vbo_id = create_VBO()
+   347                                               send_data_to_VBO(vbo_id, data)
+   348                                           
+   349                                               return vbo_id
+
+File: pyglet_vbo_test7.py
+Function: send_data_to_VBO at line 352
+Total time: 0.467595 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   352                                           @do_profile(DO_PROFILE)
+   353                                           def send_data_to_VBO(vbo_id, data):
+   354                                           # < 0.1ms
+   355                                           
+   356                                               # binds the named buffer object
+   357        66         1002     15.2      0.2      glBindBuffer(GL_ARRAY_BUFFER, vbo_id)
+   358                                           
+   359                                               # creates and initializes a buffer object's data store -> transfers data 
+   360                                               # from the CPU to the GPU.
+   361                                               # TODO: check whether GL_DYNAMIC_DRAW or GL_STREAM_DRAW is faster.
+   362                                               # GL_STREAM_DRAW should be faster when updating the buffer @ every frame?
+   363                                               # see redbook page 95 & 96.
+   364        66       466593   7069.6     99.8      glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW)
+
+File: pyglet_vbo_test7.py
+Function: overwrite_line_segment_on_GPU at line 367
+Total time: 0 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   367                                           @do_profile(DO_PROFILE)
+   368                                           def overwrite_line_segment_on_GPU(x_shift=SHIFT_X_BY, line_points=False, vbo_to_update=False):
+   369                                           # ~ 0.3ms
+   370                                               if not vbo_to_update:
+   371                                                   print "!! no vbo pointer found - aborting !!"
+   372                                                   print "update_counter: %d " % update_counter
+   373                                                   return
+   374                                           
+   375                                               if not line_points:
+   376                                                   if DEBUG:
+   377                                                       print "overwrite_line_segment_on_GPU: need to generate points"
+   378                                                   line_points = generate_line_segment(x_shift)
+   379                                           
+   380                                               data = transform_line_points_to_data_format_for_GPU(line_points)
+   381                                               color = generate_color_for_segment()
+   382                                               nbr_points = len(line_points)/2
+   383                                           
+   384                                               # update data on VBO
+   385                                               send_data_to_VBO(vbo_to_update, data)
+   386                                           
+   387                                               return nbr_points, color
+
+File: pyglet_vbo_test7.py
+Function: create_vbos at line 390
+Total time: 0.001516 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   390                                           @do_profile(DO_PROFILE)
+   391                                           def create_vbos(NBR_PANELS, NBR_VBOS_PER_PANEL):
+   392                                           
+   393         3            7      2.3      0.5      vbos = [ [None] * int(NBR_VBOS_PER_PANEL) for i in range(NBR_PANELS) ]
+   394                                               
+   395         3            3      1.0      0.2      for panel in range(NBR_PANELS):
+   396        68           52      0.8      3.4          for vbo in range(NBR_VBOS_PER_PANEL):
+   397        66         1453     22.0     95.8              vbos[panel][vbo] = create_VBO()
+   398                                           
+   399         1            1      1.0      0.1      return vbos
+
+File: pyglet_vbo_test7.py
+Function: create_initial_data at line 402
+Total time: 2.91367 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   402                                           @do_profile(DO_PROFILE)
+   403                                           def create_initial_data(nPanels, nVbosPerPanel, nDataPointsPerVbo):
+   404                                           
+   405         3            6      2.0      0.0      data = [ [None] * int(nVbosPerPanel) for i in range(nPanels) ]
+   406                                               
+   407         3            4      1.3      0.0      for panel in range(nPanels):
+   408        68          116      1.7      0.0          for vbo in range(nVbosPerPanel):
+   409        66          158      2.4      0.0              curr_x_offset = (vbo * SHIFT_X_BY) + X_OFFSET_PANEL
+   410                                                       #print "vbo %d, offset %d " % (vbo, curr_x_offset)
+   411                                                       
+   412        66           77      1.2      0.0              if (vbo + 1) == nVbosPerPanel:
+   413         2        71637  35818.5      2.5                  tmp = generate_line_segment_zeros(x_shift=curr_x_offset)
+   414                                                       else:
+   415        64      2446458  38225.9     84.0                  tmp = generate_line_segment(x_shift=curr_x_offset)
+   416                                                           
+   417        66       395217   5988.1     13.6              data[panel][vbo] = transform_line_points_to_data_format_for_GPU(tmp)
+   418                                               
+   419         1            1      1.0      0.0      return data, curr_x_offset
+
+File: pyglet_vbo_test7.py
+Function: create_initial_colors at line 422
+Total time: 0.000839 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   422                                           @do_profile(DO_PROFILE)
+   423                                           def create_initial_colors(nPanels, nVbosPerPanel):
+   424                                           
+   425         3           12      4.0      1.4      colors = [ [None] * int(nVbosPerPanel) for i in range(nPanels) ]
+   426                                               
+   427         3            3      1.0      0.4      for panel in range(nPanels):
+   428        68           91      1.3     10.8          for vbo in range(nVbosPerPanel):
+   429        66          732     11.1     87.2              colors[panel][vbo] = generate_color_for_segment()
+   430                                               
+   431         1            1      1.0      0.1      return colors
+
+File: pyglet_vbo_test7.py
+Function: initialize_vbos_with_start_data at line 434
+Total time: 0.468279 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   434                                           @do_profile(DO_PROFILE)
+   435                                           def initialize_vbos_with_start_data(NBR_PANELS, NBR_VBOS_PER_PANEL, vbos, data):
+   436                                               
+   437         3            7      2.3      0.0      for panel in range(NBR_PANELS):
+   438        68           83      1.2      0.0          for vbo in range(NBR_VBOS_PER_PANEL):
+   439        66       468189   7093.8    100.0              send_data_to_VBO(vbos[panel][vbo], data[panel][vbo])
+
+File: pyglet_vbo_test7.py
+Function: setup_vbo_stuff at line 442
+Total time: 3.38638 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   442                                           @do_profile(DO_PROFILE)
+   443                                           def setup_vbo_stuff(NBR_PANELS, NBR_VBOS_PER_PANEL, NBR_DATA_POINTS_PER_VBO):
+   444                                               
+   445         1            4      4.0      0.0      t0 = time()
+   446                                               
+   447         1         1643   1643.0      0.0      vbos = create_vbos(NBR_PANELS, NBR_VBOS_PER_PANEL)
+   448         1      2915134 2915134.0     86.1      data, curr_x_offset = create_initial_data(NBR_PANELS, NBR_VBOS_PER_PANEL, NBR_DATA_POINTS_PER_VBO)
+   449         1       468401 468401.0     13.8      initialize_vbos_with_start_data(NBR_PANELS, NBR_VBOS_PER_PANEL, vbos, data)
+   450         1          971    971.0      0.0      colors = create_initial_colors(NBR_PANELS, NBR_VBOS_PER_PANEL)
+   451                                               
+   452         1          223    223.0      0.0      print 'initial setup time was %f seconds.' %(time() - t0)
+   453                                               
+   454         1            2      2.0      0.0      return vbos, colors, curr_x_offset
+
+File: pyglet_vbo_test7.py
+Function: update_line_segment_on_GPU at line 465
+Total time: 0.231005 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   465                                           @do_profile(DO_PROFILE)
+   466                                           def update_line_segment_on_GPU(vbo_id, pointer_offset, data):
+   467                                               
+   468                                               # bind buffer and overwrite position with offset 'pos_to_overwrite*BYTES_PER_POINT'
+   469                                               #try:
+   470      6072        97761     16.1     42.3      glBindBuffer(GL_ARRAY_BUFFER, vbo_id)
+   471      6072       133244     21.9     57.7      glBufferSubData(GL_ARRAY_BUFFER, pointer_offset, sizeof(data), data)
+
+File: pyglet_vbo_test7.py
+Function: calc_x_values_single_buffer at line 478
+Total time: 0.025533 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   478                                           @do_profile(DO_PROFILE)
+   479                                           def calc_x_values_single_buffer():
+   480      2892        23414      8.1     91.7      x_values = np.arange(0, SHIFT_X_SINGLE_BUFFER, STEPSIZE_X)
+   481      2892         2119      0.7      8.3      return x_values
+
+File: pyglet_vbo_test7.py
+Function: append_data_to_plot_queue at line 484
+Total time: 0.024426 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   484                                           @do_profile(DO_PROFILE)
+   485                                           def append_data_to_plot_queue(new_data, nbr_buffers_per_mmap_file):
+   486                                               
+   487                                               # reformat data so that the buffers from 'j' mmap files
+   488                                               # are paired together.
+   489      3232         2560      0.8     10.5      for j in range(int(min(nbr_buffers_per_mmap_file))):
+   490      3200         2326      0.7      9.5          data_to_add = []
+   491      9600         9660      1.0     39.5          for k in range(len(new_data)):
+   492      6400         7029      1.1     28.8              data_to_add.append(new_data[k][j])
+   493                                                   
+   494                                                   # append 'data_to_add' to end (right side) of queue
+   495      3200         2851      0.9     11.7          plot_queue.append(data_to_add)
+
+File: pyglet_vbo_test7.py
+Function: get_data_from_plot_queue at line 498
+Total time: 0.004843 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   498                                           @do_profile(DO_PROFILE)
+   499                                           def get_data_from_plot_queue():
+   500                                               # remove & return left most element from queue
+   501      2892         3120      1.1     64.4      data = plot_queue.popleft()
+   502      2892         1723      0.6     35.6      return data
+
+File: pyglet_vbo_test7.py
+Function: request_new_data at line 505
+Total time: 22.7453 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   505                                           @do_profile(DO_PROFILE)
+   506                                           def request_new_data():
+   507                                               ''' generates new raw data or grabs new data from MMAP '''
+   508                                               
+   509      3125         3346      1.1      0.0      if USE_MMAP == 1:
+   510      3125     21106816   6754.2     92.8          new_data = get_data_from_mmap()
+   511                                                   #update_data_stream_status(new_data)
+   512                                                   #print new_data
+   513                                               else:
+   514                                                   new_data = []
+   515                                                   # get the x-spacing right
+   516                                                   x_values = calc_x_values_single_buffer()
+   517                                                   for j in range(NBR_INDEPENDENT_CHANNELS):
+   518                                                       # put data into zero-th buffer
+   519                                                       new_data.append([generate_numbers_for_x_vector(x_values)])
+   520                                           
+   521      3125         4379      1.4      0.0      nbr_mmap_files = len(new_data)
+   522      3125        10773      3.4      0.0      nbr_buffers_per_mmap_file = np.zeros(nbr_mmap_files)
+   523      3125         8968      2.9      0.0      empty_data = np.zeros(nbr_mmap_files)    
+   524      9375        12235      1.3      0.1      for j in range(nbr_mmap_files):
+   525                                               
+   526                                                   # update number of buffers in this 'file'. Will fail
+   527                                                   # if len(new_data) != NBR_INDEPENDENT_CHANNELS
+   528      6250         5841      0.9      0.0          try:
+   529      6250        11808      1.9      0.1              nbr_buffers_per_mmap_file[j] = len(new_data[j])
+   530                                                   except:
+   531                                                       continue
+   532                                                   
+   533                                                   # check whether the first buffer of the current mmap file is empty
+   534      6250      1551574    248.3      6.8          sum_data = sum(new_data[j][0])
+   535      6250        17555      2.8      0.1          if sum_data == 0 or sum_data == DATA_RECEIVED_ACK_NUM:
+   536      6218         8663      1.4      0.0              empty_data[j] = 1    
+   537                                                       
+   538                                               # print empty_data
+   539      3125         3297      1.1      0.0      return new_data, empty_data, nbr_buffers_per_mmap_file
+
+File: pyglet_vbo_test7.py
+Function: get_nbr_received_buffers_from_mmap at line 562
+Total time: 0.024549 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   562                                           @do_profile(DO_PROFILE)
+   563                                           def get_nbr_received_buffers_from_mmap():
+   564                                               # go to position where 'number of new buffers' is stored
+   565      3125        10495      3.4     42.8      mmap_stats_go_to_nbr_received_buffers_pos()
+   566                                               # read-in the string value
+   567      3125         5928      1.9     24.1      nbr_buffers_received = mmap_stats.read(MMAP_BYTES_PER_FLOAT)
+   568                                               # convert into decimal value
+   569      3125         5539      1.8     22.6      nbr_buffers_received = unpack('d', nbr_buffers_received)[0]
+   570                                               # debugging:
+   571                                               #print str(nbr_buffers_received) + ' number buffers received'
+   572      3125         2587      0.8     10.5      return nbr_buffers_received
+
+File: pyglet_vbo_test7.py
+Function: get_data_from_mmap at line 600
+Total time: 10.561 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   600                                           @do_profile(DO_PROFILE)
+   601                                           def get_data_from_mmap():
+   602                                               # 9.22401s for 2737 run (in profile mode) -->  0.0034s
+   603      3125         4637      1.5      0.0      t0 = time()    
+   604                                               
+   605      3125        54734     17.5      0.5      nbr_buffers_received = get_nbr_received_buffers_from_mmap()
+   606                                           
+   607      3125         5294      1.7      0.1      nbr_mmap_files = len(mmap_data)
+   608      3125        41620     13.3      0.4      zeros = np.zeros(NBR_DATA_POINTS_PER_BUFFER_INT)
+   609                                               
+   610                                               ''' no new buffers - generate one empty dummy buffer and return '''
+   611      3125         6346      2.0      0.1      if nbr_buffers_received == 0 or nbr_buffers_received == -1:
+   612      3093        40260     13.0      0.4          return create_empty_data_buffer(nbr_mmap_files, zeros)
+   613                                           
+   614                                           
+   615        32           78      2.4      0.0      nbr_buffers_received = int(nbr_buffers_received)
+   616        32           43      1.3      0.0      nbr_elements = nbr_buffers_received * NBR_DATA_POINTS_PER_BUFFER_INT
+   617                                           
+   618                                               # check if there's any data that's ready for pickup.
+   619        32          125      3.9      0.0      new_data_found = np.zeros(nbr_mmap_files)
+   620        96          199      2.1      0.0      for mmap_file_index in range(nbr_mmap_files):
+   621                                           	# go to beginning of memory mapped area 
+   622        64          134      2.1      0.0          mmap_data[mmap_file_index].seek(0)
+   623                                                   
+   624                                                   # quit right away if no new data has been written yet.
+   625        64          131      2.0      0.0          this_element = mmap_data[mmap_file_index].read(MMAP_BYTES_PER_FLOAT)
+   626        64          113      1.8      0.0          this_element = unpack('d', this_element)[0]
+   627        64          627      9.8      0.0          if round(this_element, 8) != DATA_RECEIVED_ACK_NUM:
+   628        32          109      3.4      0.0              new_data_found[mmap_file_index] = 1
+   629                                               
+   630                                               # none of the files contain new data
+   631        32          447     14.0      0.0      if sum(new_data_found) == 0:
+   632                                                   return create_empty_data_buffer(nbr_mmap_files, zeros, nbr_buffers_received)
+   633                                           
+   634                                               ''' read out transferred data '''
+   635        32           60      1.9      0.0      data = []
+   636                                               # this is ~ 10ms slower.
+   637                                               #data = np.zeros((nbr_mmap_files, nbr_buffers_received, NBR_DATA_POINTS_PER_BUFFER_INT))	
+   638                                               
+   639                                               # at least one new buffer has arrived.
+   640        96          234      2.4      0.0      for mmap_file_index in range(nbr_mmap_files):
+   641                                                   
+   642                                                   #'''        
+   643                                                   # pre-allocate each buffer
+   644        64           89      1.4      0.0          buffers = []
+   645      6464         8274      1.3      0.1          for buffer_index in range(nbr_buffers_received):
+   646                                                       # DONE: find out what the problem here is:
+   647                                                       # there seems to be a bug in python on windows, or I don't understand the way things work:
+   648                                                       # if I create 'zeros' outside this loop, the second time that 'zeros' gets called, 
+   649                                                       # it will contain all values found in data[mmap_file_index][buffer][j]. Therefore I have to re-generate
+   650                                                       # the 'zeros' for each mmap_file_index'th loop.
+   651                                                       # SOLUTION:
+   652                                                       # We need to make a 'deep-copy' of zeros, otherwise we are just 
+   653                                                       # passing a reference to the same object (which is a np.array object).
+   654      6400        18269      2.9      0.2              zero_copy = zeros.copy()
+   655      6400         9528      1.5      0.1              buffers.append(zero_copy)
+   656                                                       
+   657                                                   # add all buffers to mmap_file_index'th data stream.
+   658        64          108      1.7      0.0          data.append(buffers)
+   659                                                   #'''
+   660                                                   
+   661                                                   # go to beginning of memory mapped area & read out all elements
+   662        64          229      3.6      0.0          mmap_data[mmap_file_index].seek(0)
+   663        64         9161    143.1      0.1          all_values_string = mmap_data[mmap_file_index].read(nbr_elements * MMAP_BYTES_PER_FLOAT)
+   664                                           
+   665                                                   # 0.1632 per call in debugger
+   666        64          110      1.7      0.0          this_data = data[mmap_file_index]
+   667        64        84411   1318.9      0.8          unpacked_values = unpack("d" * nbr_elements, all_values_string)
+   668                                                   
+   669   3276864      4502245      1.4     42.6          for abs_idx in range(nbr_elements):
+   670   3276800      5766646      1.8     54.6              this_data[abs_idx / NBR_DATA_POINTS_PER_BUFFER_INT][abs_idx % NBR_DATA_POINTS_PER_BUFFER_INT] = unpacked_values[abs_idx]
+   671                                           
+   672                                                   # write back sub-list
+   673        64          186      2.9      0.0          data[mmap_file_index] = this_data
+   674                                                   
+   675                                           
+   676                                                   ''' original version.
+   677                                                   # these next few lines are responsible for 90% of the time spent in this function.
+   678                                                   # 0.4974s per call in debugger
+   679                                                   element_values_list = list(splitIterator(all_values_string, MMAP_BYTES_PER_FLOAT))
+   680                                                   for abs_element_index in range(nbr_elements):
+   681                                                       this_element = element_values_list[abs_element_index]
+   682                                                       this_element = unpack('d', this_element)[0]
+   683                                                       buffer_nbr = abs_element_index / NBR_DATA_POINTS_PER_BUFFER_INT
+   684                                                       index_in_buffer = abs_element_index % NBR_DATA_POINTS_PER_BUFFER_INT
+   685                                                       data[mmap_file_index][buffer_nbr][index_in_buffer] = this_element
+   686                                           		'''
+   687                                           
+   688                                                   ''' useless alternatives
+   689                                           
+   690                                                   # even worse: -> ~ 0.0063 secs per call
+   691                                                   unpacked_values = [unpack('d', element_values_list[j])[0] for j in range(nbr_elements)]
+   692                                                   # worst: ~0.0160 secs per call
+   693                                                   buffer_ids = np.arange(nbr_elements) / NBR_DATA_POINTS_PER_BUFFER_INT
+   694                                                   index_in_buffer_id = np.arange(nbr_elements) % NBR_DATA_POINTS_PER_BUFFER_INT
+   695                                                   
+   696                                                   for abs_element_index in range(nbr_elements):
+   697                                                       data[mmap_file_index][buffer_ids[abs_element_index]][index_in_buffer_id[abs_element_index]] = unpacked_values[abs_element_index]
+   698                                                   '''
+   699                                           
+   700        64          176      2.8      0.0  	t1 = time()
+   701        64         5316     83.1      0.1  	print 'get_data_from_mmap() takes %f seconds' %(t1-t0)  			
+   702                                           
+   703                                               # overwrite the 'number of buffers received' field with zero, so that we don't
+   704                                               # keep reading in this very same data.
+   705        32          320     10.0      0.0      mmap_stats_go_to_nbr_received_buffers_pos()
+   706        32          139      4.3      0.0      mmap_stats.write(NBR_BUFFERS_ZERO_STR)
+   707                                           
+   708                                           
+   709                                               # go to beginning of memory mapped area and overwrite first value with
+   710                                               # ACK string so that the sender knows that it is safe to overwrite the 
+   711                                               # previous data (== send new data). 
+   712        96          238      2.5      0.0      for mmap_file_index in range(nbr_mmap_files):
+   713        64          147      2.3      0.0          mmap_data[mmap_file_index].seek(0)
+   714        64          130      2.0      0.0          mmap_data[mmap_file_index].write(DATA_RECEIVED_ACK_STR)   
+   715                                           
+   716                                           
+   717                                               '''
+   718                                               # debugging
+   719                                               for mmap_file_index in range(nbr_mmap_files):
+   720                                                   for buffer_index in range(nbr_buffers_received):
+   721                                                       if sum(data[mmap_file_index][buffer_index]) != 131328 or data[mmap_file_index][buffer_index][0] != 1:
+   722                                                           print 'mmap_file_index = %d; buffer = %d; DATA_RECEIVED_ACK_STR_RECEIVED = %d; ' %(mmap_file_index, buffer_index, DATA_RECEIVED_ACK_STR_RECEIVED)
+   723                                                           print 'element[0-10]:  '
+   724                                                           for j in range(10):
+   725                                                               print data[mmap_file_index][buffer_index][j]
+   726                                                           
+   727                                                           #print data[mmap_file_index][buffer]
+   728                                                           raw_input('data error - please press key to continue ')
+   729                                                   
+   730                                               print data[0]
+   731                                               '''
+   732                                                   	
+   733                                           
+   734        32           42      1.3      0.0      return data
+
+File: pyglet_vbo_test7.py
+Function: setup_mmap at line 770
+Total time: 0.000133 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   770                                           @do_profile(DO_PROFILE)
+   771                                           def setup_mmap(filenames):
+   772                                               
+   773                                               # matlab:
+   774                                               # m = memmapfile('/tmp/bla', 'Format', 'double', 'Writable', true)
+   775                                               # m.Data = sin(linspace(200, 203, 512))*100
+   776                                               # m.Data = linspace(200, 300, 512);
+   777                                               # t = timer('TimerFcn', 'm.Data=sin(linspace(200, 203, 512)) * rand(1)*512;', 'Period', 0.015, 'ExecutionMode', 'fixedRate');
+   778                                               # start(t)
+   779                                               
+   780         1            3      3.0      2.3      mmap_false = False
+   781         1            1      1.0      0.8      mmap_data = []
+   782                                               
+   783         3            6      2.0      4.5      for i in range(len(filenames)):
+   784                                               
+   785         2            4      2.0      3.0        fname = filenames[i]
+   786                                                 # check if file exists
+   787         2           39     19.5     29.3        if not os.path.isfile(fname):
+   788                                                     # check if directory exists
+   789                                                     path_to_file = os.path.dirname(fname)
+   790                                                     if not os.path.isdir(path_to_file):
+   791                                                         print "Directory '" + path_to_file + "' not found - aborting."
+   792                                                         return mmap_false
+   793                                                     # (over-) write file
+   794                                                     fd = os.open(fname, os.O_CREAT | os.O_TRUNC | os.O_RDWR)
+   795                                                     assert os.write(fd, MMAP_NULL_HEX * MMAP_STORE_LENGTH)
+   796                                                     os.close(fd)
+   797                                             
+   798                                                 # initialize the memory map
+   799         2           21     10.5     15.8        f = open(fname, "r+b")
+   800         2           35     17.5     26.3        mmap_data.append(mmap.mmap(f.fileno(), 0))
+   801                                                 
+   802                                                 # initialize memory with default value
+   803         5            9      1.8      6.8        for j in range(len(mmap_data)):
+   804         3           14      4.7     10.5            mmap_data[i][j] = MMAP_NULL_HEX
+   805                                               
+   806         1            1      1.0      0.8      return mmap_data
+
+File: pyglet_vbo_test7.py
+Function: update at line 856
+Total time: 41.6412 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   856                                           @do_profile(DO_PROFILE)
+   857                                           def update(dt):
+   858                                           # ~ 24 ms, generating new data set for each panel
+   859                                           # ~ 6 ms, generating only one new data set and re-using it.
+   860                                           # ~ 0.4 ms, without 'generate_line_segment' and 'overwrite_line_segment_on_GPU'
+   861                                           
+   862                                               global x_shift_current, x_shift_single_buffer_current
+   863                                               global pointer_shift
+   864                                               global vbos, colors
+   865                                               global SHIFT_VIEW
+   866                                               global c
+   867                                               global pointer_offset, nbr_points_rendered_in_last_vbo
+   868                                           
+   869      3125         6882      2.2      0.0      if not DO_ANIMATE:
+   870                                                   # quit right away if animation is disabled. Ideally we would want to still 
+   871                                                   # compute at least the next set of 'tmp_points', however we need to make sure that
+   872                                                   # 'x_shift_current' doesn't get updated more than once (or 'SHIFT_X_BY' is updated
+   873                                                   # accordingly).        
+   874                                                   return
+   875                                                   
+   876      3125         4909      1.6      0.0      if DO_NEXT_STEP:
+   877                                                   raw_input('please press key to continue ')
+   878                                           
+   879      3125         4361      1.4      0.0      if DEBUG:
+   880                                                   print "update_counter in 'update()' %d " % update_counter
+   881                                                   t0 = time()        
+   882                                           
+   883                                             
+   884                                               ''' '''
+   885                                               ### DATA MANAGEMENT
+   886                                               # pick up new data from mmap or other system (i.e. generated)
+   887      3125     22832965   7306.5     54.8      new_data, new_data_is_empty, nbr_buffers_per_mmap_file = request_new_data()
+   888                                           
+   889                                               # don't add empty data to the queue    
+   890                                               # don't use 'NBR_INDEPENDENT_CHANNELS' here, because we might be skipping this channel
+   891      3125        19789      6.3      0.0      if sum(new_data_is_empty) != len(new_data):    
+   892                                                   # add 'new_data' to end of plot queue
+   893                                                   #print 'adding to queue'
+   894                                                   #print new_data
+   895                                                   #print new_data_is_empty
+   896                                                   #raw_input('please press key to continue ')
+   897        32        45671   1427.2      0.1          append_data_to_plot_queue(new_data, nbr_buffers_per_mmap_file)
+   898                                           
+   899                                               
+   900                                               # don't purge entire queue - keep at least one element in queue.
+   901      3125         5958      1.9      0.0      if len(plot_queue) < 1:
+   902       233          311      1.3      0.0          return
+   903                                           
+   904                                               # grab 'raw_data' from beginning of plot queue.
+   905      2892        25204      8.7      0.1      raw_data = get_data_from_plot_queue()
+   906      2892     12250179   4235.9     29.4      data = transform_vector_of_buffers_to_GPU_format(raw_data, x_shift_single_buffer_current)
+   907                                               #print "current queue length: %d" % len(plot_queue)
+   908                                               
+   909                                           
+   910                                               ### VBO POSITIONING
+   911      2892        11276      3.9      0.0      pos_to_overwrite = c % (NBR_DATA_POINTS_PER_VBO / NBR_DATA_POINTS_PER_BUFFER)
+   912      2892         8670      3.0      0.0      nbr_points_rendered_in_last_vbo = int(NBR_DATA_POINTS_PER_BUFFER * pos_to_overwrite)
+   913                                           
+   914      2892         5172      1.8      0.0      pointer_offset = nbr_points_rendered_in_last_vbo * BYTES_PER_POINT
+   915                                           
+   916      2892         4726      1.6      0.0      nbr_data_streams = len(data)
+   917      8676        20359      2.3      0.0      for panel in range(NBR_PANELS):
+   918      5784       258623     44.7      0.6          update_line_segment_on_GPU(vbos[panel][-1], pointer_offset, data[panel % nbr_data_streams])
+   919                                               
+   920      2892         5073      1.8      0.0      c += 1
+   921      2892         5357      1.9      0.0      x_shift_single_buffer_current += SHIFT_X_SINGLE_BUFFER
+   922      2892         4915      1.7      0.0      pointer_shift += NBR_DATA_POINTS_PER_BUFFER    
+   923                                               
+   924      2892         5328      1.8      0.0      if pointer_shift == NBR_DATA_POINTS_PER_VBO:
+   925                                                   # reset pointer offsets / shifts
+   926                                                   # TODO: clean up and clarify 'pointer_shift' vs 'pointer_offset'!
+   927       144          196      1.4      0.0          pointer_shift = 0
+   928       144          198      1.4      0.0          pointer_offset = 0
+   929                                           
+   930       144          236      1.6      0.0          x_shift_current += SHIFT_X_BY
+   931                                                   
+   932                                                   ''' this is not fast enough and will lead to jitter effects
+   933                                                   
+   934                                                   # generate new data set for each panel
+   935                                                   tmp_points = [ [None] for j in range(NBR_PANELS)]
+   936                                                   for panel in range(NBR_PANELS):
+   937                                                       tmp_points_panel = generate_line_segment_zeros(x_shift=x_shift_current)
+   938                                                       tmp_points[panel] = transform_line_points_to_data_format_for_GPU(tmp_points_panel)
+   939                                                       
+   940                                                   '''
+   941                                                   
+   942                                                   # TODO: get rid of these lines and initialize empty memory (see loop below)
+   943                                                   
+   944                                                   # generate one new data set, and re-use it for all panels.
+   945       144      5199938  36110.7     12.5          tmp_points_panel = generate_line_segment_zeros(x_shift=x_shift_current)
+   946       144       872703   6060.4      2.1          data = transform_line_points_to_data_format_for_GPU(tmp_points_panel)
+   947                                                   
+   948                                                   # len(data) == 2 * NBR_DATA_POINTS_PER_VBO
+   949                                           
+   950       432         1171      2.7      0.0          for panel in range(NBR_PANELS):
+   951                                                       
+   952       288          494      1.7      0.0              this_vbo = vbos[panel][0]
+   953       288          464      1.6      0.0              this_color = colors[panel][0]
+   954                                                       
+   955                                                       # allocate memory
+   956                                                       # glDeleteBuffers(1, pointer(this_vbo))
+   957                                                       # new_vbo = create_VBO()
+   958                                                       # glBindBuffer(GL_ARRAY_BUFFER, this_vbo)
+   959                                                       # glBufferData(GL_ARRAY_BUFFER, n_COORDINATES_PER_VERTEX * NBR_DATA_POINTS_PER_VBO * BYTES_PER_POINT, None, GL_DYNAMIC_DRAW)
+   960                                                       #
+   961                                                       # TODO: 
+   962       288        27978     97.1      0.1              update_line_segment_on_GPU(this_vbo, 0, data)                
+   963                                                       
+   964                                                       # vbo pointer & color from arrays
+   965       288         1206      4.2      0.0              vbos[panel] = vbos[panel][1:]
+   966       288          685      2.4      0.0              colors[panel] = colors[panel][1:]
+   967                                           
+   968                                                       # add color and pointer to VBO
+   969       288          681      2.4      0.0              vbos[panel].append(this_vbo)
+   970       288          513      1.8      0.0              colors[panel].append(this_color)
+   971                                                       
+   972                                           
+   973                                               # indicate that view needs to be shifted 
+   974      2892         4609      1.6      0.0      SHIFT_VIEW = True
+   975                                               
+   976      2892         4447      1.5      0.0      if DEBUG:
+   977                                                   t1 = time()
+   978                                                   print 'update() takes %f seconds' %(t1-t0)    
+
+File: pyglet_vbo_test7.py
+Function: on_key_press at line 989
+Total time: 9.6e-05 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   989                                           @window.event
+   990                                           @do_profile(DO_PROFILE)
+   991                                           def on_key_press(symbol, modifiers):
+   992                                               
+   993                                               global DO_ANIMATE, DO_NEXT_STEP, KEYPRESS_STEPSIZE, zoom, currentScale
+   994                                               global x_shift_single_buffer_current
+   995                                               global plot_queue
+   996                                               # turn animation on / off.     
+   997         1            3      3.0      3.1      if symbol == key.A:
+   998                                                   DO_ANIMATE = not DO_ANIMATE
+   999                                                   if DO_ANIMATE:
+  1000                                                       print 'animation on'
+  1001                                                   else:
+  1002                                                       print 'animation off'
+  1003         1            2      2.0      2.1      elif symbol == key.C:
+  1004                                                   plot_queue = setup_plotting_queue()
+  1005                                                   print "Cleared Plot-Queue"
+  1006         1            2      2.0      2.1      elif symbol == key.Q:
+  1007                                                   print "Plot-Queue size: %d" % (len(plot_queue))
+  1008                                               # zero the plot along the x axis. in case of drifting, this should get the
+  1009                                               # back onto the screen.
+  1010         1            1      1.0      1.0      elif symbol == key.Z:
+  1011                                                   glTranslatef(+x_shift_single_buffer_current, 0.0, 0.0)
+  1012                                                   fps_display.label.x = fps_display.label.x - x_shift_single_buffer_current
+  1013                                                   x_shift_single_buffer_current = 0
+  1014                                                   x_shift_current = 0
+  1015         1            1      1.0      1.0      elif symbol == key.S:
+  1016                                                   DO_NEXT_STEP = not DO_NEXT_STEP
+  1017         1            1      1.0      1.0      elif symbol == key.LEFT:
+  1018                                                   glTranslatef(-KEYPRESS_STEPSIZE, 0.0, 0.0)
+  1019         1            2      2.0      2.1      elif symbol == key.RIGHT:
+  1020                                                   glTranslatef(KEYPRESS_STEPSIZE, 0.0, 0.0)
+  1021         1            5      5.0      5.2      elif (symbol == key.PLUS or symbol == key.NUM_ADD):
+  1022                                                   KEYPRESS_STEPSIZE += 10
+  1023                                                   print 'step size is now %d ' % KEYPRESS_STEPSIZE
+  1024         1            2      2.0      2.1      elif (symbol == key.MINUS or symbol == key.NUM_SUBTRACT):
+  1025                                                   KEYPRESS_STEPSIZE -= 10
+  1026                                                   KEYPRESS_STEPSIZE = max(10, KEYPRESS_STEPSIZE)
+  1027                                                   print 'step size is now %d ' % KEYPRESS_STEPSIZE
+  1028                                               else:
+  1029         1           76     76.0     79.2          print '%s key, %s modifier was pressed' % (symbol, modifiers)        
+  1030                                                   
+  1031                                               ''' zooming
+  1032                                               elif symbol == key.Z:
+  1033                                                   if modifiers == key.MOD_ALT + 16:
+  1034                                                       #zoom -= 0.5;
+  1035                                                       #glOrtho(+1.5 + zoom, 1.0 + zoom, +2.0 + zoom, 0.5 + zoom, +1.0, -3.5)
+  1036                                                       #currentScale -= 0.1
+  1037                                                       #glScaled(currentScale, currentScale, 1);    
+  1038                                                   elif modifiers == key.MOD_SHIFT + 16:
+  1039                                                       #zoom += 0.5;            
+  1040                                                       #glOrtho(-1.5 + zoom, 1.0 - zoom, -2.0 + zoom, 0.5 - zoom, -1.0, 3.5)
+  1041                                                       #currentScale += 0.1
+  1042                                                       #glScaled(currentScale, currentScale, 1);
+  1043                                               '''
+  1044                                           
+  1045                                                   
+  1046                                               ''' rotations
+  1047                                               elif symbol == key.PAGEDOWN:
+  1048                                                   # we need to move objects into center, before rotating
+  1049                                                   #glRotatef(0.5, 1, 0, 0)
+  1050                                                   # need to move object back to original position
+  1051                                               elif symbol == key.PAGEUP:
+  1052                                                   # we need to move objects into center, before rotating
+  1053                                                   #glRotatef(-0.5, 1, 0, 0)
+  1054                                                   # need to move object back to original position
+  1055         1            1      1.0      1.0      '''
+
+File: pyglet_vbo_test7.py
+Function: on_resize at line 1063
+Total time: 7e-06 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1063                                           @window.event
+  1064                                           @do_profile(DO_PROFILE)
+  1065                                           def on_resize(width, height):
+  1066                                               global WIN_HEIGHT_current, WIN_WIDTH_current
+  1067         1            4      4.0     57.1      WIN_HEIGHT_current = height
+  1068         1            2      2.0     28.6      WIN_WIDTH_current = width
+  1069                                               # TODO: currently we only rescale the Y dimension. Add X-Scaling!
+  1070         1            1      1.0     14.3      if DEBUG:
+  1071                                                   print "new height %d " %(height)
+  1072                                                   print "new width %d " %(width)
+
+File: pyglet_vbo_test7.py
+Function: on_draw at line 1088
+Total time: 11.4893 s
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+  1088                                           @window.event
+  1089                                           @do_profile(DO_PROFILE)
+  1090                                           def on_draw():
+  1091                                           # ~ 21ms (test6 was ~260ms)
+  1092                                           
+  1093                                               global SHIFT_VIEW
+  1094                                           
+  1095                                               # clear buffers to preset values
+  1096      3125       114051     36.5      1.0      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+  1097                                               # TODO:
+  1098                                               # maybe we should move back to the origin and translate from there?
+  1099                                               # glLoadIdentity()
+  1100                                               # glTranslatef(-x_shift_single_buffer_current/2, 0.0, 0.0)
+  1101                                           
+  1102      3125         5288      1.7      0.0      if SHIFT_VIEW:
+  1103                                                   #local_shift = (SHIFT_X_BY/CALL_UPDATE_X_TIMES_PER_SECOND)
+  1104                                                   
+  1105                                                   # TODO: fix 'local_shift', right now we override it to '1'
+  1106                                                   # 'SHIFT_X_BY' needs to be an integral number, otherwise we get 
+  1107                                                   # artifacts of single points moving up and down between shifts.
+  1108      2891         5253      1.8      0.0          local_shift = STEPSIZE_X * NBR_DATA_POINTS_PER_BUFFER
+  1109                                                   #local_shift = 1
+  1110      2891        38439     13.3      0.3          glTranslatef(-local_shift, 0.0, 0.0)
+  1111                                                   
+  1112                                                   # shift location of FPS display by same amount - but in opposite direction
+  1113                                                   # TODO: this must be because of a different reference point?
+  1114      2891       202093     69.9      1.8          fps_display.label.x = fps_display.label.x + local_shift
+  1115      2891         4994      1.7      0.0          SHIFT_VIEW = False
+  1116                                           
+  1117      3125         3756      1.2      0.0      if USE_UNIFORM_COLOR:
+  1118      3125        48894     15.6      0.4          glColor3f(DEFAULT_COLOR[0], DEFAULT_COLOR[1], DEFAULT_COLOR[2])
+  1119                                           
+  1120      3125         5267      1.7      0.0      height_per_panel = (WIN_HEIGHT_current / NBR_PANELS)
+  1121                                           
+  1122      9375        17111      1.8      0.1      for panel in range(0, NBR_PANELS):
+  1123                                           
+  1124                                                   #glViewport(x, y, w, h)
+  1125      6250        90282     14.4      0.8          glViewport(0, panel * height_per_panel, WIN_WIDTH_current, height_per_panel)
+  1126                                           
+  1127                                                   # plot each VBO
+  1128    212500       289430      1.4      2.5          for segment in range(0, NBR_VBOS_PER_PANEL):
+  1129                                                       
+  1130    206250       235853      1.1      2.1              if not USE_UNIFORM_COLOR:
+  1131                                                           this_color = colors[panel][segment]
+  1132                                                           glColor3f(this_color[0], this_color[1], this_color[2])         
+  1133                                           
+  1134                                                       # bind the named buffer object so we can work with it.
+  1135    206250      2291487     11.1     19.9              glBindBuffer(GL_ARRAY_BUFFER, vbos[panel][segment])
+  1136                                           
+  1137                                                       ## TODO!
+  1138                                                       ''' hide individual buffers in first VBO so that points disappear
+  1139                                                           smoothly in the first buffer '''
+  1140    206250       262792      1.3      2.3              this_pointer_offset = 0
+  1141    206250       251202      1.2      2.2              nbr_points_to_draw = NBR_DATA_POINTS_PER_VBO
+  1142    206250       259997      1.3      2.3              if segment == 0:
+  1143      6250         7920      1.3      0.1                  this_pointer_offset = pointer_offset
+  1144      6250         9990      1.6      0.1                  nbr_points_to_draw = NBR_DATA_POINTS_PER_VBO - (pointer_offset / BYTES_PER_POINT)
+  1145    200000       254656      1.3      2.2              elif segment == NBR_VBOS_PER_PANEL - 1:
+  1146                                                           # TODO: is 'nbr_points_rendered_in_last_vbo' correct? or are we plotting too few points?
+  1147      6250         7203      1.2      0.1                  this_pointer_offset = 0
+  1148      6250         7375      1.2      0.1                  nbr_points_to_draw = nbr_points_rendered_in_last_vbo
+  1149                                                       
+  1150                                                       # specifies the location and data format of an array of vertex coordinates to use when rendering
+  1151    206250      2417043     11.7     21.0              glVertexPointer(n_COORDINATES_PER_VERTEX, GL_FLOAT, 0, this_pointer_offset)
+  1152                                           
+  1153                                                       # render primitives from array data
+  1154    206250      3528835     17.1     30.7              glDrawArrays(GL_LINE_STRIP, 0, nbr_points_to_draw)
+  1155                                           
+  1156                                               # update the FPS display.
+  1157      3125        43272     13.8      0.4      glViewport(0, 0, WIN_WIDTH_current, WIN_HEIGHT_current)
+  1158      3125      1086822    347.8      9.5      fps_display.draw()
+
