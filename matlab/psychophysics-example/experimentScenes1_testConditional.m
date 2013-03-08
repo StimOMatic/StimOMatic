@@ -7,7 +7,9 @@
 %urut/MPI/2012
 
 %%
-basepathImgs = 'C:\ueli\images\Animals\';
+
+% adjust these paths accordingly
+basepathImgs = 'C:\Users\rutishauseru\Documents\GitHub\StimOmatic\matlab\psychophysics-example\stimuli\';
 basepathLogs='c:\logs\';
 
 stimOnTime = 2;
@@ -16,7 +18,7 @@ blankTimeRandMultiplier = 4;   % +- so many secs randomization
 colorToBlank = [127 127 127];
 
 colorToFlash = [255 255 255];  % which color to flash
-screens = 2;  %can use both screens (background) and only update one at the same time
+screens = 1;  %can use both screens (background) and only update one at the same time
 turtleTTLs; %import common TTL markers
 
 RTCtrlMode = 3;  %1 events, 2 shared variable immediate (power onset), 3 shared variable delay (phase stim)
@@ -105,9 +107,9 @@ sendTTLwithLog( fidLog, TTLs.EXPERIMENT_ON   );   %exp ON
 stimwidth=[500 500];
 srect = [stimcenter(1)-stimwidth(1) stimcenter(2)-stimwidth(2) stimcenter(1)+stimwidth(1) stimcenter(2)+stimwidth(2)];
 
-pathImgs='C:\ueli\images\Animals\';
+pathImgs=basepathImgs;
 imgName1='51.jpg';
-imgName2='90.jpg';
+imgName2='52.jpg';
 
 imgSequence1 = imread([pathImgs imgName1]);
 imgSequence2 = imread([pathImgs imgName2]);
@@ -123,7 +125,7 @@ for jj=1:length(possibleFiles)
     end
 end
 
-imgOrig =  imread( 'C:\ueli\images\Animals\90.jpg'  );  %used to be 44
+imgOrig =  imread( [pathImgs imgName2]  );  
 
 displayImage=1;
 delayToUse = 10000;     %only automatically triggered stim onsets
