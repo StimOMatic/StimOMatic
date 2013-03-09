@@ -15,7 +15,7 @@ This version has been tested with *Cheetah* v5.6.3 and v5.3.1. and Neuralynx Rou
 
 ### 2) Python and OpenGL plotting ###
 
-- follow instructions in `python\OpenGLPlotting\pomp\docs\INSTALL.txt` file.
+- follow instructions in `python\OpenGLPlotting\pomp\docs\INSTALL.md` [file](python/OpenGLPlotting/pomp/docs/INSTALL.md).
 
 ### 3) Matlab ###
 
@@ -53,9 +53,8 @@ This will indicated that the previously selected plugin has the absolute plugin 
 
 ## Using conditional visual displas ##
 
-See the [INSTALL.md][INSTALL.md] file inside the subdirectory `matlab\psychophysics-example` for instructions on how to run the display part of StimOmatic.
-
+See the [INSTALL.md](matlab/psychophysics-example/INSTALL.md) file inside the subdirectory `matlab\psychophysics-example` for instructions on how to run the display part of StimOmatic.
 
 [NetComRouter]: http://neuralynx.com/software/Router_v120.zip
-[INSTALL.md]: https://github.com/StimOmatic/StimOmatic/blob/master/matlab/psychophysics-example/INSTALL.md
+
 
