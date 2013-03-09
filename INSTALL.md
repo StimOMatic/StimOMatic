@@ -54,10 +54,9 @@ This will indicated that the previously selected plugin has the absolute plugin 
 
 ## Using conditional visual displas ##
 
-See the [INSTALL.txt][INSTALL-psychophysics-example] file inside the subdirectory `matlab\psychophysics-example` for instructions on how to run the display part of StimOmatic.
+See the [INSTALL.md](matlab/psychophysics-example/INSTALL.md) file inside the subdirectory `matlab\psychophysics-example` for instructions on how to run the display part of StimOmatic.
 
 
 [NetComRouter]: http://neuralynx.com/software/Router_v120.zip
-[INSTALL-psychophysics-example]: https://github.com/StimOmatic/StimOmatic/blob/master/matlab/psychophysics-example/INSTALL.txt
 
 
