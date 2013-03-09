@@ -1,5 +1,4 @@
-Install & Usage instructions
-============================
+# Install & Usage instructions #
 
 The following are install and usage instructions for the `StimOmatic` software package that will run on the analysis computer. These instructions assume that you are using a `Neuralynx` system operated by the `Cheetah` data acquisition software.
 
@@ -8,26 +7,24 @@ will look just like a real system.
 
 This version has been tested with Cheetah v5.6.3 and v5.3.1. and Neuralynx Router v1.2.0. Version of the router less than 1.2.0 are not supported nor are any version of Cheetah less than 5.3.1.
 
-Installing StimOmatic
-=====================
-## 1) Install and run NetComRouter 
+## Installing StimOmatic ##
+### 1) Install and run NetComRouter ###
 
 - download NetComRouter program [http://neuralynx.com/software/Router_v120.zip][NetComRouter] 
 - run programm by double clicking on `Router.exe`
 - connect to your Cheetah computer (`Network` -> `Connect to server` -> `IP address`)
 
-## 2) Python and OpenGL plotting
+### 2) Python and OpenGL plotting ###
 
 - follow instructions in `python\OpenGLPlotting\pomp\docs\INSTALL.txt` file.
 
-## 3) Matlab
+### 3) Matlab ###
 
 - add directory  `matlab\` to your matlab path.
 - open `setpath_win.m` and modify `basepath` so it points to above directory (full path).
 
 
-Using StimOmatic
-================
+## Using StimOmatic ##
  
 - run `setpath_win`
 - run `OSortViewer`
@@ -55,8 +52,7 @@ This will indicated that the previously selected plugin has the absolute plugin 
 - run `1_start_pContinuousOpenGL.py` by double clicking the file
 
 
-Using conditional visual displays
-=================================
+## Using conditional visual displas ##
 
 See the [INSTALL.txt][INSTALL-psychophysics-example] file inside the subdirectory `matlab\psychophysics-example` for instructions on how to run the display part of StimOmatic.
 
