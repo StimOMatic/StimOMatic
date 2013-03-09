@@ -2,7 +2,7 @@
 
 This package has two components:  
 1) Simple psychophysics toolbox script (Matlab) that displays stimuli conditional on commands received from the online analysis of StimOMatic.  
-2) Python communication server that receives commands sent by Stimomatic.
+2) Python communication server that receives commands sent by StimOmatic.
 
 ## Requirements: ##
 These apply to the system where psychophysics toolbox should be used to display stimuli.
@@ -14,16 +14,21 @@ These apply to the system where psychophysics toolbox should be used to display 
 
 ## Install instructions: ##
 
-1. The Python TCP Server is in `python/tcpServerMmap/tcpServerMmap.py`  
-The default for the shared file is set as `c:/temp/varstoreNew.dat`. The default TCP Port used is 9999.
+### 1) Python
 
-Change this as required.  
+The Python TCP Server is in `python/tcpServerMmap/tcpServerMmap.py`  
 
-Then run `tcpServerMmap.py`. It should say 'Press any key to start...". Press any key and it should say "Ready to receive data...".
+The default for the shared file is set as `c:/temp/varstoreNew.dat`. The default TCP Port used is 9999.  
+Change these settings as required.  
 
-This completes the python part. Press `Ctrl-C` to close the program properly.
+Then run `tcpServerMmap.py`. It should say `Press any key to start...`.  
+Press any key and it should say `Ready to receive data...`.  
 
-2. In the Matlab running on the display system (psychophysics toolbox), execute `setpath_win.m` to initialize all paths.  
+This completes the Python part. Press `Ctrl-C` to close the program properly.
+
+### 2) Matlab
+
+In the Matlab running on the display system (psychophysics toolbox), execute `setpath_win.m` to initialize all paths.  
 Modify `experimentScenes1_testConditional.m` accordingly (paths in first few lines).
 
 This script will display stimuli conditional on the power of ongoing oscillations. Also, it will send TTLs to the acqusition
@@ -36,6 +41,7 @@ Also drag the python script that receives the data to the same screen so you can
 ## Usage instructions: ##
 
 1. In Stimomatic, put the IP address of the system where `tcpServerMmap.py` is running into the field `PTB Sys IP`.
+
 2. Add the `Realtime Control LFP` plugin. Adjust settings accordingly. Whenever the threshold is crossed for the channel specified, the control plugin will send a command to the system identified in `PTY Sys IP`. 
 The `tcpServerMmap.py` script will acknowledge this with `received data: X`.
 
