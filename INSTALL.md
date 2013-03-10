@@ -13,11 +13,11 @@ This version has been tested with *Cheetah* v5.6.3 and v5.3.1. and Neuralynx Rou
 - run programm by double clicking on `Router.exe`
 - connect to your Cheetah computer (`Network` -> `Connect to server` -> `IP address`)
 
-### 2) Python and OpenGL plotting ###
+### 2) Install and configure Python OpenGL mmap plotter (POMP) ###
 
 - follow instructions in `python\OpenGLPlotting\pomp\docs\INSTALL.md` [file](python/OpenGLPlotting/pomp/docs/INSTALL.md).
 
-### 3) Matlab ###
+### 3) Configure Matlab ###
 
 - add directory  `matlab\` to your matlab path.
 - open `setpath_win.m` and modify `basepath` so it points to above directory (full path).
@@ -27,7 +27,7 @@ This version has been tested with *Cheetah* v5.6.3 and v5.3.1. and Neuralynx Rou
  
 - run `setpath_win`
 - run `OSortViewer`
-- modify `Router IP` so that the IP address matches the IP of the computer where `Router.exe` is running (see 1).
+- modify `Router IP` so that the IP address matches the IP of the computer where `Router.exe` is running (see [1](#1-install-and-run-netcomrouter)).
 - press `Connect` button
 - select channel from `CSC Channels` pulldown list, and add it using the `+` sign. 
 - select plugin from plugin list on right side of GUI, e.g., `Continuous LFP/Spikes plot (OpenGL)`. Press `Add Plugin` button.
