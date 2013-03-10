@@ -1,10 +1,11 @@
-# POMP install instructions #
-## QUICK INSTALL (experts): ##
-  - python 2.7
-  - numpy
+# POMP (Python OpenGL mmap plotter) install instructions #
+## Quick install (experts) ##
+  make sure you have the following installed:
+  - Python 2.7.x
+  - NumPy
   - pyglet 1.1.x
 
-## STEP by STEP install: ##
+## Step by Step install ##
 
 ### 1) Windows: ###
 
@@ -54,6 +55,6 @@
     $ sudo python setup.py install 
 
 
-### 3) Ubuntu / Linux only: in case the application does freeze make sure the following requirements are met: ###
-   - Nvidia driver version 280.13; I had lots of problems with version 290 & 295
-   - latest pyglet dev version is installed (see point 2). I tried both pyglet-1.1.2 and pyglet-1.1.4 that come with ubuntu but I get very poor performance.
+### 3) Ubuntu / Linux only: in case the application does freeze, make sure the following requirements are met: ###
+   - Nvidia driver version 280.13; we experienced lot's of problems with versions 290 & 295.
+   - latest pyglet dev version is installed (see point 2). We experienced very poor performance with both pyglet-1.1.2 and pyglet-1.1.4 that ship with Ubuntu.
