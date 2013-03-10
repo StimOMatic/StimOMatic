@@ -4,6 +4,7 @@
 
 ## Download ##
 ### Stable releases ###
+- StimOmatic [v0.12][v0.12]: updated install instructions.
 - StimOmatic [v0.11][v0.11]: added demo code for conditional visual display.
 - StimOmatic [v0.1][v0.1]: initial public release.  
 
@@ -24,6 +25,7 @@ While we strive to provide a well tested and functioning system, we make no guar
 
 The latest version, documentation and instructions on how to reach us will be made available at [http://stimomatic.brain.mpg.de][ProjectURL]. A permanent but static page containing the initial release can be accessed by visiting [http://www.brain.mpg.de/research/laurent-department/software-techniques.html][LabURL]
 
+[v0.12]: https://github.com/StimOmatic/StimOmatic/archive/v0.12.zip
 [v0.11]: https://github.com/StimOmatic/StimOmatic/archive/v0.11.zip
 [v0.1]: https://github.com/StimOmatic/StimOmatic/archive/v0.1.zip
 [repo]: https://github.com/StimOmatic/StimOmatic
