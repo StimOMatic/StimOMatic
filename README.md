@@ -1,5 +1,7 @@
 # Welcome! #
 
+*StimOmatic* is a tool for closed-loop experimentation. It provides a flexible software framework that enables experimenters to add experiment-specific functionality easily by providing plugins. We provide several plugins for realtime processing of local field potentials, enabling closed-loop presentation of visual stimuli conditional on the phase and power of ongoing oscillations. 
+
 *StimOmatic* is the accompanying code for the 2013 publication *"A method for closed-loop presentation of sensory stimuli conditional on the internal brain-state of awake animals"* by U. Rutishauser, A. Kotowicz and G. Laurent; Journal of Neuroscience Methods ([http://dx.doi.org/10.1016/j.jneumeth.2013.02.020] [DOI]).
 
 ## Download ##
