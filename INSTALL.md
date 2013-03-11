@@ -51,7 +51,7 @@ This will indicated that the previously selected plugin has the absolute plugin 
 - run `1_start_pContinuousOpenGL.py` by double clicking the file
 
 
-## Using conditional visual displas ##
+## Using conditional visual displays ##
 
 See the [INSTALL.md](matlab/psychophysics-example/INSTALL.md) file inside the subdirectory `matlab\psychophysics-example` for instructions on how to run the display part of StimOmatic.
 
