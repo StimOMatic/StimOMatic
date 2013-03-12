@@ -22,7 +22,7 @@ function varargout = OSortViewer(varargin)
 
 % Edit the above text to modify the response to help OSortViewer
 
-% Last Modified by GUIDE v2.5 28-Feb-2012 14:54:50
+% Last Modified by GUIDE v2.5 12-Mar-2013 17:24:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
@@ -224,6 +224,8 @@ serverIP = get( handles.ServerIP, 'String');
 
 addEntryToStatusListbox( handles.ListboxStatus, ['Connecting to: ' serverIP]);
 set(handles.buttonStartFeed, 'Enable', 'on');
+set(handles.StartACQButton, 'Enable', 'on');
+set(handles.StartRECButton, 'Enable', 'on');
 drawnow();
 
 [success, eventStr, allCSCs,allSEs,allTTs] = Netcom_initConn( serverIP );
@@ -263,6 +265,8 @@ function DisconnectButton_Callback(hObject, eventdata, handles)
 
 set(handles.buttonStartFeed, 'Enable', 'off');
 set(handles.ConnectButton, 'Enable', 'on');
+set(handles.StartACQButton, 'Enable', 'off');
+set(handles.StartRECButton, 'Enable', 'off');
 Netcom_disconnectConn();
 
 addEntryToStatusListbox( handles.ListboxStatus, 'Disconnected' );
@@ -843,3 +847,67 @@ function popupRealtimeMode_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in StartACQButton.
+function StartACQButton_Callback(hObject, eventdata, handles)
+% hObject    handle to StartACQButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+button_state = get(hObject, 'Value');
+button_max = get(hObject, 'Max');
+button_min = get(hObject, 'Min');
+
+if button_state == button_max
+    [succeeded, cheetahReply] = NlxSendCommand('-StartAcquisition');
+    if succeeded == 1
+        set(hObject, 'String', 'Stop ACQ', 'BackgroundColor', [0 1 0]);
+    else
+        set(hObject, 'Value', button_min);
+    end
+    
+elseif button_state == button_min
+    [succeeded, cheetahReply] = NlxSendCommand('-StopAcquisition');
+    if succeeded == 1
+        set(hObject, 'String', 'Start ACQ', 'BackgroundColor', [0.941 0.941 0.941]);
+    else
+        set(hObject, 'Value', button_max);
+    end    
+    
+end
+
+% --- Executes on button press in StartRECButton.
+function StartRECButton_Callback(hObject, eventdata, handles)
+% hObject    handle to StartRECButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+button_state = get(hObject, 'Value');
+button_max = get(hObject, 'Max');
+button_min = get(hObject, 'Min');
+
+if button_state == button_max
+    [succeeded, cheetahReply] = NlxSendCommand('-StartRecording');
+    if succeeded == 1
+        set(hObject, 'String', 'Stop REC', 'BackgroundColor', [0.48 0.06 0.89]);
+        % toggle ACQ button too, since stopping the REC will not stop ACQ.
+        if get(handles.StartACQButton, 'Value') == button_min
+            disp('setting ACQ too!');
+            set(handles.StartACQButton, 'Enable', 'off', 'String', 'Stop ACQ', 'BackgroundColor', [0 1 0], 'Value', button_max);
+        end
+    else
+        set(hObject, 'Value', button_min);
+    end
+    
+elseif button_state == button_min
+    [succeeded, cheetahReply] = NlxSendCommand('-StopRecording');
+    if succeeded == 1
+        set(hObject, 'String', 'Start REC', 'BackgroundColor', [0.941 0.941 0.941]);
+        set(handles.StartACQButton, 'Enable', 'on');
+    else
+        set(hObject, 'Value', button_max);
+    end    
+    
+end
+
+
+

@@ -2,6 +2,7 @@
 % path pointing to matlab directory of StimOMatic source
 % code package.
 basepath = 'C:\Users\rutishauseru\Documents\GitHub\StimOmatic\matlab\';
+%basepath = 'C:\Users\superuser\Documents\GitHub\StimOmatic\matlab\';
 
 %% for realtime app
 path(path, basepath);
