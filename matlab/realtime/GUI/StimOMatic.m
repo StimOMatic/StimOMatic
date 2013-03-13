@@ -223,10 +223,6 @@ function ConnectButton_Callback(hObject, eventdata, handles)
 serverIP = get( handles.ServerIP, 'String');
 
 addEntryToStatusListbox( handles.ListboxStatus, ['Connecting to: ' serverIP]);
-set(handles.buttonStartFeed, 'Enable', 'on');
-set(handles.StartACQButton, 'Enable', 'on');
-set(handles.StartRECButton, 'Enable', 'on');
-drawnow();
 
 [success, eventStr, allCSCs,allSEs,allTTs] = Netcom_initConn( serverIP );
 handles.StimOMaticConstants.TTLStream=eventStr;
@@ -237,10 +233,19 @@ if success ~= 1 || isempty(allCSCs)
     else
         errMsg = ['Error connecting to: ' serverIP ' err ' num2str(success)];
     end
+    % close the connection if it's open.
+    if NlxAreWeConnected() 
+        Netcom_disconnectConn();
+    end
     addEntryToStatusListbox( handles.ListboxStatus, errMsg );
     return;
 end
-    
+
+% activate dependent GUI elements only if connection was successful.
+set(handles.buttonStartFeed, 'Enable', 'on');
+set(handles.StartACQButton, 'Enable', 'on');
+set(handles.StartRECButton, 'Enable', 'on');
+
 % populate info into GUI
 set(handles.CSCListPopup,  'String', {'none', allCSCs{:}} );
 addEntryToStatusListbox( handles.ListboxStatus, ['Connected ' serverIP]);
@@ -254,6 +259,7 @@ handles.pList = pList;
 % disable 'connect button'
 set(hObject, 'Enable', 'off');
 set(handles.DisconnectButton, 'Enable', 'on');
+drawnow();
 
 guidata(hObject, handles); %write back GUI data before letting the timer start
 
