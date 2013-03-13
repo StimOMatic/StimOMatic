@@ -4,7 +4,7 @@
 function [success, eventStr, allCSCs,allSEs,allTTs] = Netcom_initConn( serverName, appName)
 
     if nargin < 2
-        appName = 'OSortViewer realtime';
+        appName = 'StimOMatic realtime';
     end
 
     [cheetahObjects,cheetahTypes,success] = initializeNetcomclient( serverName, appName );

@@ -9,11 +9,11 @@ plotMode = (get( handles.popupPlotMode, 'Value'));
 
 
 %% data structures neededed
-pluginData.OSortConstants = handlesParent.OSortConstants;
+pluginData.StimOMaticConstants = handlesParent.StimOMaticConstants;
 
-%pluginData.filteredDataLFP = zeros(1, handlesParent.OSortConstants.bufferSizeCSC);
-%pluginData.filteredDataSpikes = zeros(1, handlesParent.OSortConstants.bufferSizeCSC);
-[initFrameBuffer,initFrameOrder] = dataBufferFramed_init(handlesParent.OSortConstants.frameSize, handlesParent.OSortConstants.nrFramesToBuffer );
+%pluginData.filteredDataLFP = zeros(1, handlesParent.StimOMaticConstants.bufferSizeCSC);
+%pluginData.filteredDataSpikes = zeros(1, handlesParent.StimOMaticConstants.bufferSizeCSC);
+[initFrameBuffer,initFrameOrder] = dataBufferFramed_init(handlesParent.StimOMaticConstants.frameSize, handlesParent.StimOMaticConstants.nrFramesToBuffer );
 
 pluginData.filteredDataLFP.data = initFrameBuffer;
 pluginData.filteredDataLFP.frameOrder = initFrameOrder;

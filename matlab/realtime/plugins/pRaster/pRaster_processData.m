@@ -3,10 +3,10 @@
 function pluginData = pRaster_processData( newDataReceived, newTimestampsReceived, pluginData, CSCBufferData, CSCTimestampData, t, tFrom )
 %disp('pRaster_processData called');
 
-Fs = pluginData.OSortConstants.Fs;
+Fs = pluginData.StimOMaticConstants.Fs;
 
 %=== prepare Spikes for raster
-tRasterFrom = t - pluginData.OSortConstants.RasterBeforeOffset*1000; %in us
+tRasterFrom = t - pluginData.StimOMaticConstants.RasterBeforeOffset*1000; %in us
 
 indsSpikes = find( pluginData.dependenceData{1}.timestamps>tRasterFrom &  pluginData.dependenceData{1}.timestamps<=t );
 

@@ -2,8 +2,8 @@ function dependencies = find_obsolete_files(dependencies)
 
     if nargin < 1
         % provide function name:
-        disp('Looking for dependencies of "OSortViewer" & "experimentScenes1_testConditional" - please wait ...');
-        dependencies = depfun('OSortViewer', 'experimentScenes1_testConditional', 'definePluginList');
+        disp('Looking for dependencies of "StimOMatic" & "experimentScenes1_testConditional" - please wait ...');
+        dependencies = depfun('StimOMatic', 'experimentScenes1_testConditional', 'definePluginList');
     end
 
     %% remove matlab directories.

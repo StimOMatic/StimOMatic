@@ -2,7 +2,7 @@
 % initialize pool of workers, data structures
 %
 %urut/dec11
-function [labRefs, nrWorkers, workerChannelMapping, allOKTot, activePluginsCont, activePluginsTrial] = initializeParallelProcessing( nrActiveChannels, OSortConstants, OSortData, serverIP, activePlugins, handlesParent, nrWorkersToUseMax )
+function [labRefs, nrWorkers, workerChannelMapping, allOKTot, activePluginsCont, activePluginsTrial] = initializeParallelProcessing( nrActiveChannels, StimOMaticConstants, StimOMaticData, serverIP, activePlugins, handlesParent, nrWorkersToUseMax )
 
 allOKTot=[];
 workerChannelMapping=[];
@@ -18,19 +18,19 @@ if nrActiveChannels == 0
 end
    
 % events are received directly in the client
-succeededEvents = NlxOpenStream( OSortConstants.TTLStream );
+succeededEvents = NlxOpenStream( StimOMaticConstants.TTLStream );
 if succeededEvents~=1
     nrWorkers=[];
     labRefs=[];
     allOKTot=0;
-    warning(['error opening TTL stream:  ' OSortConstants.TTLStream ' error code ' num2str(succeededEvents) '. Cant continue.']);
+    warning(['error opening TTL stream:  ' StimOMaticConstants.TTLStream ' error code ' num2str(succeededEvents) '. Cant continue.']);
     return;
 else
-    disp(['opened event stream: ' OSortConstants.TTLStream]);
+    disp(['opened event stream: ' StimOMaticConstants.TTLStream]);
 end
 
 % distribute channels to workers, decide how many workers are needed
-[workerChannelMapping, nrWorkers] = distributeChannels_toWorkers( nrWorkersToUseMax, nrActiveChannels, OSortData );
+[workerChannelMapping, nrWorkers] = distributeChannels_toWorkers( nrWorkersToUseMax, nrActiveChannels, StimOMaticData );
 
 initializeWorkers( nrWorkers );
 
@@ -48,7 +48,7 @@ globalProperties = Composite(nrWorkers);   % global properties, sent to all work
 
 trialDataInit = getTrialDataInit;
 
-processedDataInit.OSortConstants = OSortConstants; %copy these so they are available to each worker in local workspace
+processedDataInit.StimOMaticConstants = StimOMaticConstants; %copy these so they are available to each worker in local workspace
 processedDataInit.workerChannelMapping = workerChannelMapping;
 
 %== init data for each plugin (all are assumed to run on all channels)
@@ -79,7 +79,7 @@ else
 end
 
 globalPropertiesInit.activePlugins = activePlugins;
-globalPropertiesInit.OSortConstants = OSortConstants;
+globalPropertiesInit.StimOMaticConstants = StimOMaticConstants;
 globalPropertiesInit.runCounter = 0;
 
 %initialize data structures on each of the workers
@@ -92,13 +92,13 @@ for workerID = 1:nrWorkers
     CSCBufferDataForWorker=[];
     CSCTimestampDataForWorker=[];
     for j=1:nrChannelsOnWorker
-       CSCChannelInfoForWorker{j} = OSortData.CSCChannels{channelsOnWorker(j)};
+       CSCChannelInfoForWorker{j} = StimOMaticData.CSCChannels{channelsOnWorker(j)};
        scheduledEventsStackForWorker{j} = [];
        processedDataForWorker{j} = processedDataInit;
        trialDataForWorker{j} = trialDataInit;
        
 
-       [dataInit,frameOrderInit] = dataBufferFramed_init(OSortConstants.frameSize, OSortConstants.nrFramesToBuffer);
+       [dataInit,frameOrderInit] = dataBufferFramed_init(StimOMaticConstants.frameSize, StimOMaticConstants.nrFramesToBuffer);
        CSCTimestampDataForWorker{j}.data = dataInit;
        CSCTimestampDataForWorker{j}.frameOrder = frameOrderInit;
        CSCBufferDataForWorker{j}.data = dataInit;
@@ -110,8 +110,8 @@ for workerID = 1:nrWorkers
     CSCBufferData{workerID} = CSCBufferDataForWorker;
     CSCTimestampData{workerID} = CSCTimestampDataForWorker;    
     
-    %CSCBufferData{workerID} = zeros(nrChannelsOnWorker, OSortConstants.bufferSizeCSC)+5.5;
-    %CSCTimestampData{workerID} = zeros(nrChannelsOnWorker, OSortConstants.bufferSizeCSC);    
+    %CSCBufferData{workerID} = zeros(nrChannelsOnWorker, StimOMaticConstants.bufferSizeCSC)+5.5;
+    %CSCTimestampData{workerID} = zeros(nrChannelsOnWorker, StimOMaticConstants.bufferSizeCSC);    
     
     CSCChannelInfo{workerID} = CSCChannelInfoForWorker;
     scheduledEventsStack{workerID} = scheduledEventsStackForWorker;
@@ -140,7 +140,7 @@ labRefs.globalProperties = globalProperties;
 spmd(nrWorkers)
    
     succeeded = NlxConnectToServer(serverIP);
-    NlxSetApplicationName( ['OSort worker #' num2str(labindex) ' ' OSortConstants.versionStr] );
+    NlxSetApplicationName( ['StimOMatic worker #' num2str(labindex) ' ' StimOMaticConstants.versionStr] );
     disp(['Worker connect succeed connect is=' num2str(succeeded)  ]);
     if succeeded~=1
         allOK=0;

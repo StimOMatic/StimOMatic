@@ -25,7 +25,7 @@ if pluginData.mmap_initialized == 0
     identifier = ['pContinuousOpenGL-' string_id];
     disp(identifier);
     % setup the mmap stuff.
-    pluginData = setup_mmap_infrastructure(pluginData.OSortConstants, pluginData, identifier);
+    pluginData = setup_mmap_infrastructure(pluginData.StimOMaticConstants, pluginData, identifier);
     pluginData.mmap_initialized = 1;
     % this is how we could in theory start the GUIs right here, but there
     % are quite some problems:
@@ -43,7 +43,7 @@ end
 %bla.Data = newDataReceived;
 
 % 'pluginData' specific to this worker:
-    % OSortConstants: [1x1 struct]
+    % StimOMaticConstants: [1x1 struct]
     % filteredDataLFP: [1x1 struct]
     % filteredDataSpikes: [1x1 struct]
     % mmap_data: [1x1 memmapfile]
@@ -143,8 +143,8 @@ else %% filtered data
     nrOverlapSpikes = 4 * framesize;
     
     % update filter buffers before raw buffers!
-    pluginData.filteredDataLFP = filterSignal_appendBlock(pluginData.OSortConstants.filters.HdLFP, CSCBufferData, pluginData.filteredDataLFP, newDataReceived', nrOverlapLFP, framesize);
-    pluginData.filteredDataSpikes = filterSignal_appendBlock(pluginData.OSortConstants.filters.HdSpikes, CSCBufferData, pluginData.filteredDataSpikes, newDataReceived', nrOverlapSpikes, framesize);
+    pluginData.filteredDataLFP = filterSignal_appendBlock(pluginData.StimOMaticConstants.filters.HdLFP, CSCBufferData, pluginData.filteredDataLFP, newDataReceived', nrOverlapLFP, framesize);
+    pluginData.filteredDataSpikes = filterSignal_appendBlock(pluginData.StimOMaticConstants.filters.HdSpikes, CSCBufferData, pluginData.filteredDataSpikes, newDataReceived', nrOverlapSpikes, framesize);
     
     pluginData.plotState = [length(newDataReceived) pluginData.plotState(2)+length(newDataReceived)];
 

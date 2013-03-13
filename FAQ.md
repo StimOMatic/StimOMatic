@@ -5,6 +5,10 @@
 **Q**: After pressing the `Start data feed` button, I get an `Error streaming` message. What's wrong?  
 **A**: Most likely, the NetComRouter can not connect to Cheetah, or the local UDP port for the NetComRouter is in use. Try restarting the computer(s).
 
+**Q**: Why does StimOMatic require MS Windows? What about MacOS and Linux?  
+**A**: This limitation results from the fact that Neuralynx's Netcom library is only available for Windows. We'll be happy to support MacOS and Linux once the required libraries are available for these operating systems. 
+
+
 ## Installing StimOMatic ##
 
 **Q**: Running the `pyglet-1.1.x.msi` installer fails with an error `requires Python 2.4 or later`. But I've just installed Python 2.7! What's wrong?  
