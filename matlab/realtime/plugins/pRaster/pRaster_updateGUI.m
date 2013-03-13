@@ -25,16 +25,16 @@ if ~isempty(spikesForRaster)
         
         
         
-        colInd = mod( CSCChanNr, length( handlesParent.OSortConstants.colorOrder) ) + 1;
+        colInd = mod( CSCChanNr, length( handlesParent.StimOMaticConstants.colorOrder) ) + 1;
         
-        colToUse = handlesParent.OSortConstants.colorOrder{colInd};
+        colToUse = handlesParent.StimOMaticConstants.colorOrder{colInd};
         
         
         plot( spikesForRaster(:,2), spikesForRaster(:,1), [ colToUse '.'] );
         hold off
         
         
-        channelStr = handlesParent.OSortData.CSCChannels{CSCChanNr}.channelStr;
+        channelStr = handlesParent.StimOMaticData.CSCChannels{CSCChanNr}.channelStr;
         text( 100, spikesForRaster(1,1), [channelStr] );
     
     
@@ -43,14 +43,14 @@ end
 
 
 
-%avLengthRaw = round(OSortConstants.LFPAverageLength/1000*OSortConstants.Fs);
-%plotOffset = OSortConstants.plotOffsetLFPAverage;
+%avLengthRaw = round(StimOMaticConstants.LFPAverageLength/1000*StimOMaticConstants.Fs);
+%plotOffset = StimOMaticConstants.plotOffsetLFPAverage;
 
-%x = [1:avLengthRaw]/OSortConstants.Fs*1000;
-%x = x-OSortConstants.LFPAverageBeforeOffset;   %line is relative to offset
+%x = [1:avLengthRaw]/StimOMaticConstants.Fs*1000;
+%x = x-StimOMaticConstants.LFPAverageBeforeOffset;   %line is relative to offset
 
 
-%set(gca,'xlim',[0 handlesParent.OSortConstants.RasterBeforeOffset]
+%set(gca,'xlim',[0 handlesParent.StimOMaticConstants.RasterBeforeOffset]
             
 %set( handles.TextBoxTrialAv, 'String', ['n=' num2str(transferedGUIData.nTrialsLFP)  ] );
 

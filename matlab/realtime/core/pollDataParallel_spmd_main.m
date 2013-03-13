@@ -22,14 +22,14 @@ for kk=1:nrRunsTotal   %how many Runs to make till return to GUI
     
     % process new data for each worker
     for chanID = 1:length(processedData)   % loop over all channels assigned to this worker
-        [dataArray,timeStampArray,timeStampArrayConv,~,numRecordsReturned] = Netcom_pollCSC( CSCChannelInfo{chanID}.channelStr, 0, globalProperties.OSortConstants.Fs, globalProperties.dataArrayPreAlloc,globalProperties.dataArrayPtr );  %0/1 verbose
+        [dataArray,timeStampArray,timeStampArrayConv,~,numRecordsReturned] = Netcom_pollCSC( CSCChannelInfo{chanID}.channelStr, 0, globalProperties.StimOMaticConstants.Fs, globalProperties.dataArrayPreAlloc,globalProperties.dataArrayPtr );  %0/1 verbose
         
         %debug - to display every package received
         
         %update internal data structures
         if numRecordsReturned>0
             [processedData,CSCBufferData,CSCTimestampData,currentTimeOnAcquisition, newDataScaled] = ...
-                pollDataParallel_processNewDataBlock(chanID, dataArray, timeStampArray,timeStampArrayConv, globalProperties.OSortConstants.bufferSizeCSC, CSCChannelInfo, processedData,  CSCBufferData,CSCTimestampData, currentTimeOnAcquisition, globalProperties.activePlugins );
+                pollDataParallel_processNewDataBlock(chanID, dataArray, timeStampArray,timeStampArrayConv, globalProperties.StimOMaticConstants.bufferSizeCSC, CSCChannelInfo, processedData,  CSCBufferData,CSCTimestampData, currentTimeOnAcquisition, globalProperties.activePlugins );
             
             %see if the new data that arrived contains future scheduled
             %averaging events

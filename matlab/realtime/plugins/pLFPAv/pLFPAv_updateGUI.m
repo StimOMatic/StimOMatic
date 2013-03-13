@@ -12,7 +12,7 @@ if isstruct(transferedGUIData)
     
     if transferedGUIData.nTrialsLFP > 0
         % left panel, LFP per channel.
-        set( handlesPlugin.lineHandles.plotLine_axesAvAll(CSCChanNr), 'ydata', transferedGUIData.LFPav+(CSCChanNr-1)*handlesParent.OSortConstants.plotOffsetLFPAverage );
+        set( handlesPlugin.lineHandles.plotLine_axesAvAll(CSCChanNr), 'ydata', transferedGUIData.LFPav+(CSCChanNr-1)*handlesParent.StimOMaticConstants.plotOffsetLFPAverage );
     
     
         
@@ -34,7 +34,7 @@ if isstruct(transferedGUIData)
             
             colorbar;
             
-            title([ handlesParent.OSortData.CSCChannels{CSCChanNr}.channelStr ]);
+            title([ handlesParent.StimOMaticData.CSCChannels{CSCChanNr}.channelStr ]);
             
             %==== raw spectra - right panel
             if ~isempty(transferedGUIData.rawSpectra)

@@ -1,4 +1,4 @@
-function pluginData = setup_mmap_infrastructure(OSortConstants, pluginData, pluginname)
+function pluginData = setup_mmap_infrastructure(StimOMaticConstants, pluginData, pluginname)
 %% memory mapping for incoming data
 
 %% these directory definitions must be in-sync with the python code.
@@ -24,12 +24,12 @@ memmapfiles = {stats_file, spike_file, lfp_file};
 
 max_nbr_buffers_transmitted = 100;
 
-if ~exist('OSortConstants', 'var')
-    OSortConstants.frameSize = 512;
+if ~exist('StimOMaticConstants', 'var')
+    StimOMaticConstants.frameSize = 512;
 end
 
 % size of stats, spike, and lfp file.
-memmapsizes = [10, max_nbr_buffers_transmitted*OSortConstants.frameSize, max_nbr_buffers_transmitted*OSortConstants.frameSize];
+memmapsizes = [10, max_nbr_buffers_transmitted*StimOMaticConstants.frameSize, max_nbr_buffers_transmitted*StimOMaticConstants.frameSize];
 
 % TODO: determine where we create non-existing shared memory files. on the
 % windows or the python side?

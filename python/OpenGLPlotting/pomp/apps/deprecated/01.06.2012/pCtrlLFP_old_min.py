@@ -145,7 +145,7 @@ SHIFT_VIEW = False
 DEBUG = 0
 
 # number of independent data streams? 
-# e.g., 'OSortViewer' feeds in one spike and one LFP channel
+# e.g., 'StimOMatic' feeds in one spike and one LFP channel
 NBR_INDEPENDENT_CHANNELS = 2 
 
 # should we use multiprocessing if possible? this might speed things up.

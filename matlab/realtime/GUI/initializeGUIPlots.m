@@ -5,7 +5,7 @@
 function lineHandles = initializeGUIPlots( handles )
 lineHandles=[];
 
-stepsize = 1e6 / handles.OSortConstants.Fs; %in ms
+stepsize = 1e6 / handles.StimOMaticConstants.Fs; %in ms
 
 %% remove old lines if they exist already
 if isfield(handles,'lineHandles')
@@ -14,7 +14,7 @@ if isfield(handles,'lineHandles')
 end
 
 %%  averages
-OSortConstants = handles.OSortConstants;
+StimOMaticConstants = handles.StimOMaticConstants;
 
 
 

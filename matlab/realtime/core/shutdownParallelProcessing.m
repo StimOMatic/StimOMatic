@@ -1,7 +1,7 @@
-function [allOK,labRefs] = shutdownParallelProcessing(nrActiveWorkers, OSortConstants, labRefs)
+function [allOK,labRefs] = shutdownParallelProcessing(nrActiveWorkers, StimOMaticConstants, labRefs)
 allOK=1;
 
-succeededEvents = NlxCloseStream(  OSortConstants.TTLStream );
+succeededEvents = NlxCloseStream(  StimOMaticConstants.TTLStream );
 
 processedData = labRefs.processedData;
 globalProperties = labRefs.globalProperties;

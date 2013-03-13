@@ -5,14 +5,14 @@ function pluginData = pSpikes_processData( newDataReceived, newTimestampsReceive
 %disp('pSpikes_processedData called');
 
 % detect spikes
-OSortParams =  pluginData.OSortConstants.OSortParams;
-[~, ~, ~,spikeWaveforms, spikeTimestamps] = extractSpikes( newDataReceived, pluginData.OSortConstants.filters.HdSpikes,OSortParams );
+StimOMaticParams =  pluginData.StimOMaticConstants.StimOMaticParams;
+[~, ~, ~,spikeWaveforms, spikeTimestamps] = extractSpikes( newDataReceived, pluginData.StimOMaticConstants.filters.HdSpikes,StimOMaticParams );
 
 if length( spikeTimestamps ) > 0
     pluginData.waveforms = [pluginData.waveforms; spikeWaveforms];
     
     %convert timestamps to absolute timestamps (they are returned relative)
-    spikeTimestampsConverted = convertTimestamps( newTimestampsReceived, spikeTimestamps, OSortParams.samplingFreq, OSortParams.rawFileVersion );
+    spikeTimestampsConverted = convertTimestamps( newTimestampsReceived, spikeTimestamps, StimOMaticParams.samplingFreq, StimOMaticParams.rawFileVersion );
     pluginData.timestamps = [pluginData.timestamps spikeTimestampsConverted];
     
     

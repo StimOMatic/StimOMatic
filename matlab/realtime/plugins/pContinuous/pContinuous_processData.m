@@ -12,8 +12,8 @@ nrOverlapSpikes = 4*framesize;
 
               
 % update filter buffers before raw buffers!
-pluginData.filteredDataLFP = filterSignal_appendBlock( pluginData.OSortConstants.filters.HdLFP, CSCBufferData, pluginData.filteredDataLFP, newDataReceived', nrOverlapLFP, framesize );
-pluginData.filteredDataSpikes = filterSignal_appendBlock( pluginData.OSortConstants.filters.HdSpikes, CSCBufferData, pluginData.filteredDataSpikes, newDataReceived', nrOverlapSpikes, framesize );
+pluginData.filteredDataLFP = filterSignal_appendBlock( pluginData.StimOMaticConstants.filters.HdLFP, CSCBufferData, pluginData.filteredDataLFP, newDataReceived', nrOverlapLFP, framesize );
+pluginData.filteredDataSpikes = filterSignal_appendBlock( pluginData.StimOMaticConstants.filters.HdSpikes, CSCBufferData, pluginData.filteredDataSpikes, newDataReceived', nrOverlapSpikes, framesize );
 
 %plotState [lengthNewData, totReceived]
 pluginData.plotState = [length(newDataReceived) pluginData.plotState(2)+length(newDataReceived)];

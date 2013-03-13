@@ -3,19 +3,19 @@
 %
 % channelList: cell array of strings, to be subscribed channels
 %
-function OSortData = requestMetaDataForSelChannels( channelList, OSortConstants )
+function StimOMaticData = requestMetaDataForSelChannels( channelList, StimOMaticConstants )
 
 %for each channel 
 nrActiveChannels = length(channelList);
-OSortData.nrActiveChannels = nrActiveChannels;
+StimOMaticData.nrActiveChannels = nrActiveChannels;
 
 for k=1:nrActiveChannels
     CSCSel = channelList{k};
     
     CSCChannelInfo = Netcom_initCSCChannel( CSCSel );
 
-    OSortData.CSCChannels{k} = CSCChannelInfo;
-%    OSortData.CSCBuffers{k} = zeros(1, OSortConstants.bufferSizeCSC);
-%    OSortData.CSCTimestampBuffer = zeros(1, OSortConstants.bufferSizeCSC);
+    StimOMaticData.CSCChannels{k} = CSCChannelInfo;
+%    StimOMaticData.CSCBuffers{k} = zeros(1, StimOMaticConstants.bufferSizeCSC);
+%    StimOMaticData.CSCTimestampBuffer = zeros(1, StimOMaticConstants.bufferSizeCSC);
 end
 

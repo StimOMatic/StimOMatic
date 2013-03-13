@@ -1,35 +1,35 @@
-function varargout = OSortViewer(varargin)
-% OSORTVIEWER MATLAB code for OSortViewer.fig
-%      OSORTVIEWER, by itself, creates a new OSORTVIEWER or raises the existing
+function varargout = StimOMatic(varargin)
+% STIMOMATIC MATLAB code for StimOMatic.fig
+%      STIMOMATIC, by itself, creates a new STIMOMATIC or raises the existing
 %      singleton*.
 %
-%      H = OSORTVIEWER returns the handle to a new OSORTVIEWER or the handle to
+%      H = STIMOMATIC returns the handle to a new STIMOMATIC or the handle to
 %      the existing singleton*.
 %
-%      OSORTVIEWER('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in OSORTVIEWER.M with the given input arguments.
+%      STIMOMATIC('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in STIMOMATIC.M with the given input arguments.
 %
-%      OSORTVIEWER('Property','Value',...) creates a new OSORTVIEWER or raises the
+%      STIMOMATIC('Property','Value',...) creates a new STIMOMATIC or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before OSortViewer_OpeningFcn gets called.  An
+%      applied to the GUI before StimOMatic_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to OSortViewer_OpeningFcn via varargin.
+%      stop.  All inputs are passed to StimOMatic_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help OSortViewer
+% Edit the above text to modify the response to help StimOMatic
 
-% Last Modified by GUIDE v2.5 12-Mar-2013 17:24:44
+% Last Modified by GUIDE v2.5 13-Mar-2013 16:19:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 0;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @OSortViewer_OpeningFcn, ...
-                   'gui_OutputFcn',  @OSortViewer_OutputFcn, ...
+                   'gui_OpeningFcn', @StimOMatic_OpeningFcn, ...
+                   'gui_OutputFcn',  @StimOMatic_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -44,13 +44,13 @@ end
 % End initialization code - DO NOT EDIT
 
 
-% --- Executes just before OSortViewer is made visible.
-function OSortViewer_OpeningFcn(hObject, eventdata, handles, varargin)
-% Choose default command line output for OSortViewer
+% --- Executes just before StimOMatic is made visible.
+function StimOMatic_OpeningFcn(hObject, eventdata, handles, varargin)
+% Choose default command line output for StimOMatic
 handles.output = hObject;
 
-%================= init OSort params
-handles.OSortConstants = initOSortParamsForStreaming( );
+%================= init StimOMatic params
+handles.StimOMaticConstants = initStimOMaticParamsForStreaming( );
 
 handles.storedEvents=[];
 
@@ -63,7 +63,7 @@ set(gcf,'Renderer','OpenGL'); % this is the fastest renderer if opengl=hardware 
 guidata(hObject, handles);
 
 % --- Outputs from this function are returned to the command line.
-function varargout = OSortViewer_OutputFcn(hObject, eventdata, handles) 
+function varargout = StimOMatic_OutputFcn(hObject, eventdata, handles) 
 varargout{1} = handles.output;
 
 
@@ -94,11 +94,11 @@ end
 modifyGUIStatus(handles, 1 );
 
 %request meta data for the selected channels
-handles.OSortData = requestMetaDataForSelChannels(ChannelsActiveList1 , handles.OSortConstants);
+handles.StimOMaticData = requestMetaDataForSelChannels(ChannelsActiveList1 , handles.StimOMaticConstants);
 
 %update the GUI
-for k=1:handles.OSortData.nrActiveChannels
-    addEntryToStatusListbox( handles.ListboxStatus,[handles.OSortData.CSCChannels{k}.channelStr '=' handles.OSortData.CSCChannels{k}.metaStr ]  );
+for k=1:handles.StimOMaticData.nrActiveChannels
+    addEntryToStatusListbox( handles.ListboxStatus,[handles.StimOMaticData.CSCChannels{k}.channelStr '=' handles.StimOMaticData.CSCChannels{k}.metaStr ]  );
 end
 
 % initialize GUIs of all plugins
@@ -118,7 +118,7 @@ callbackPeriod = 0.05; %sec
 
 
 
-%setappdata(handles.guifig, 'CustomDataOSort', customData );
+%setappdata(handles.guifig, 'CustomDataStimOMatic', customData );
 
 handles.tmr1  = timer('TimerFcn' ,{@GUICallback1, timerType, handles.guifig}, 'Period', callbackPeriod, 'ExecutionMode', 'fixedRate');
 
@@ -130,7 +130,7 @@ nrWorkersToUseMax = get( handles.popupMaxNrWorkers, 'Value');
 handles.RTModeOn = get(handles.popupRealtimeMode,'Value')-1;
 
 % initialize all the workers
-[handles.labRefs,nrWorkers,workerChannelMapping, allOK, activePluginsCont, activePluginsTrial] = initializeParallelProcessing( handles.OSortData.nrActiveChannels, handles.OSortConstants, handles.OSortData, serverIP, handles.activePlugins, handles, nrWorkersToUseMax );
+[handles.labRefs,nrWorkers,workerChannelMapping, allOK, activePluginsCont, activePluginsTrial] = initializeParallelProcessing( handles.StimOMaticData.nrActiveChannels, handles.StimOMaticConstants, handles.StimOMaticData, serverIP, handles.activePlugins, handles, nrWorkersToUseMax );
 handles.nrWorkersInUse = nrWorkers;
 handles.workerChannelMapping = workerChannelMapping;
 handles.activePluginsCont = activePluginsCont;
@@ -184,8 +184,8 @@ end
 
 global customData;
 
-%[succeeded,allOK, allChs] = startStopStreaming( handles.OSortData, 2  ); %2=stop
-[allOK, customData.labRefs] = shutdownParallelProcessing(handles.nrWorkersInUse, handles.OSortConstants, customData.labRefs);
+%[succeeded,allOK, allChs] = startStopStreaming( handles.StimOMaticData, 2  ); %2=stop
+[allOK, customData.labRefs] = shutdownParallelProcessing(handles.nrWorkersInUse, handles.StimOMaticConstants, customData.labRefs);
 
 addEntryToStatusListbox( handles.ListboxStatus, ['Stop streaming status ' num2str(allOK)]);
 
@@ -229,7 +229,7 @@ set(handles.StartRECButton, 'Enable', 'on');
 drawnow();
 
 [success, eventStr, allCSCs,allSEs,allTTs] = Netcom_initConn( serverIP );
-handles.OSortConstants.TTLStream=eventStr;
+handles.StimOMaticConstants.TTLStream=eventStr;
 
 if success ~= 1 || isempty(allCSCs)
     if isempty(allCSCs) && success == 1
@@ -356,11 +356,11 @@ function buttonResetAverages_Callback(hObject, eventdata, handles)
 
 try
     
-    if ~isfield(handles, 'OSortData') || isempty(handles.OSortData)
+    if ~isfield(handles, 'StimOMaticData') || isempty(handles.StimOMaticData)
         return;
     end
     
-    nrActiveChannels = handles.OSortData.nrActiveChannels;
+    nrActiveChannels = handles.StimOMaticData.nrActiveChannels;
     
     processedData = handles.labRefs.processedData;
     
@@ -908,6 +908,3 @@ elseif button_state == button_min
     end    
     
 end
-
-
-

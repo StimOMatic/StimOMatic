@@ -9,18 +9,18 @@ function pluginDataToTransfer = pRaster_prepareGUItransfer( pluginData )
 rasterPointsToPlot =[];
 
 %only plot last XX trials in the raster
-trialsToPlot = min( pluginData.nTrialsRaster, pluginData.OSortConstants.maxTrialsPerChannel);
+trialsToPlot = min( pluginData.nTrialsRaster, pluginData.StimOMaticConstants.maxTrialsPerChannel);
 
 for k=1:trialsToPlot
     CSCChanNr=labindex;
     
     trialIndToUse = pluginData.nTrialsRaster-trialsToPlot+k;
-    trialNrOffset = (CSCChanNr-1)*pluginData.OSortConstants.maxTrialsPerChannel;
+    trialNrOffset = (CSCChanNr-1)*pluginData.StimOMaticConstants.maxTrialsPerChannel;
     times = pluginData.spikeTimepoints(trialIndToUse).times;
     
     %re-reference to the offset
     
-    xAxisOffset = ( pluginData.OSortConstants.RasterBeforeOffset - pluginData.OSortConstants.LFPAverageAfterOffset);
+    xAxisOffset = ( pluginData.StimOMaticConstants.RasterBeforeOffset - pluginData.StimOMaticConstants.LFPAverageAfterOffset);
     
     rasterPointsToPlot = [ rasterPointsToPlot; [repmat(trialNrOffset+k,length(times),1) (times-xAxisOffset)']];
 end
