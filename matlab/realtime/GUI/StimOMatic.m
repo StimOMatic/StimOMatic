@@ -46,6 +46,11 @@ end
 
 % --- Executes just before StimOMatic is made visible.
 function StimOMatic_OpeningFcn(hObject, eventdata, handles, varargin)
+
+if ~ispc()
+    error('StimOMatic currently requires MS Windows. See http://stimomatic.brain.mpg.de/FAQ.html for details.');
+end
+
 % Choose default command line output for StimOMatic
 handles.output = hObject;
 

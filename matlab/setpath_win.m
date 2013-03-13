@@ -3,38 +3,42 @@
 % code package.
 basepath = 'C:\Users\rutishauseru\Documents\GitHub\StimOMatic\matlab\';
 %basepath = 'C:\Users\superuser\Documents\GitHub\StimOMatic\matlab\';
+%basepath = '/home/kotowicz/Documents/code/MPI/StimOMatic__kotowicz/matlab/';
 
 %% for realtime app
+
+dd = filesep();
+
 path(path, basepath);
 
-addpath(genpath([basepath '3rd_party/chronux/spectral_analysis']));
-path(path, [basepath '3rd_party/neuralynxNetcom/']);
-path(path, [basepath '3rd_party/pauser/']);
+addpath(genpath([basepath ['3rd_party' dd 'chronux' dd 'sspectral_analysis']]));
+path(path, [basepath ['3rd_party' dd 'neuralynxNetcom' dd '']]);
+path(path, [basepath ['3rd_party' dd 'pauser' dd '']]);
 
 path(path, [basepath 'continuous']);
-path(path, [basepath 'helperfunctions/']);
-path(path, [basepath 'ieeg/']);
+path(path, [basepath 'helperfunctions']);
+path(path, [basepath 'ieeg']);
 
 
-path(path, [basepath 'realtime/']);
-path(path, [basepath 'realtime/core']);
-path(path, [basepath 'realtime/GUI']);
-path(path, [basepath 'realtime/memVarShare']);
-path(path, [basepath 'realtime/NetcomWrappers']);
-path(path, [basepath 'realtime/plugins']);
-path(path, [basepath 'realtime/plugins/pSpikes']);
-path(path, [basepath 'realtime/plugins/pContinuous']);
-path(path, [basepath 'realtime/plugins/pContinuousOpenGL']);
-path(path, [basepath 'realtime/plugins/pLFPAv']);
-path(path, [basepath 'realtime/plugins/pRaster']);
-path(path, [basepath 'realtime/plugins/pCtrlLFP']);
-path(path, [basepath 'realtime/tcpClientMat']);
+path(path, [basepath 'realtime']);
+path(path, [basepath ['realtime' dd 'core']]);
+path(path, [basepath ['realtime' dd 'GUI']]);
+path(path, [basepath ['realtime' dd 'memVarShare']]);
+path(path, [basepath ['realtime' dd 'NetcomWrappers']]);
+path(path, [basepath ['realtime' dd 'plugins']]);
+path(path, [basepath ['realtime' dd 'plugins' dd 'pSpikes']]);
+path(path, [basepath ['realtime' dd 'plugins' dd 'pContinuous']]);
+path(path, [basepath ['realtime' dd 'plugins' dd 'pContinuousOpenGL']]);
+path(path, [basepath ['realtime' dd 'plugins' dd 'pLFPAv']]);
+path(path, [basepath ['realtime' dd 'plugins' dd 'pRaster']]);
+path(path, [basepath ['realtime' dd 'plugins' dd 'pCtrlLFP']]);
+path(path, [basepath ['realtime' dd 'tcpClientMat']]);
 
 %% for PTB example
 
-path(path,[basepath 'psychophysics-example/']);
-path(path,[basepath 'psychophysics-example/3rdParty/lptwrite/']);
-path(path,[basepath 'psychophysics-example/div/']);
-path(path,[basepath 'psychophysics-example/ptb/']);
+path(path, [basepath 'psychophysics-example']);
+path(path, [basepath ['psychophysics-example' dd '3rdParty' dd 'lptwrite' dd '']]);
+path(path, [basepath ['psychophysics-example' dd 'div' dd '']]);
+path(path, [basepath ['psychophysics-example' dd 'ptb' dd '']]);
 
 %% EOF
