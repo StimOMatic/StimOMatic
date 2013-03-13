@@ -3,7 +3,7 @@
 function pluginData = pLFPAv_processData( newDataReceived, newTimestampsReceived, pluginData, CSCBufferData, CSCTimestampData, t, tFrom )
 disp('pLFPAv_processData called');
 
-Fs = pluginData.OSortConstants.Fs;
+Fs = pluginData.StimOMaticConstants.Fs;
 
 %=== prepare average LFP across all trials
 %find index of this timestamp

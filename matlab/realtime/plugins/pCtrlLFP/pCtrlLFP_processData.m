@@ -7,7 +7,7 @@ function pluginData = pCtrlLFP_processData( newDataReceived, newTimestampsReceiv
 MARKER_SECONDARY_LOW_THRESHOLD=199;
 %check for which channel(s) the plugin is active currently (set in the GUI)
 if pluginData.enabledOnChannelInt == pluginData.channelInfo_caller.channelInt
-    Fs = pluginData.OSortConstants.Fs;
+    Fs = pluginData.StimOMaticConstants.Fs;
     
     %if it exists on this channel
     methodNr = pluginData.methodNr;

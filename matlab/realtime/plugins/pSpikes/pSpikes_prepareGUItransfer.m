@@ -15,8 +15,8 @@ if ~isempty(pluginData.lastPlottedInfo)
     waveformsToPlot = pluginData.waveforms(end-nrWaveformsAdded+1:end,:);
     
     %concat if too many
-    if size(waveformsToPlot,1)>pluginData.OSortConstants.maxNrWaveformsToPlot
-        waveformsToPlot = waveformsToPlot(  end-pluginData.OSortConstants.maxNrWaveformsToPlot+1:end,:);
+    if size(waveformsToPlot,1)>pluginData.StimOMaticConstants.maxNrWaveformsToPlot
+        waveformsToPlot = waveformsToPlot(  end-pluginData.StimOMaticConstants.maxNrWaveformsToPlot+1:end,:);
     end
 
     %get the oldest handles to be replaced

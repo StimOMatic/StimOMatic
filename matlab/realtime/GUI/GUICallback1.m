@@ -9,7 +9,7 @@ verbose = 0;
 handles = guidata(guihandles); % get data from GUI
 global customData;   %not pretty,but fast; avoid call to setappdata every iteration,which is very slow.
 
-%customData = getappdata( guihandles, 'CustomDataOSort');
+%customData = getappdata( guihandles, 'CustomDataStimOMatic');
 %customData.counter=customData.counter+1;
 %customData.counter
 
@@ -35,14 +35,14 @@ end
 
 if ~RTModeOn   % dont process events in RT Mode
     
-    [handles.storedEvents,updateAv,tOff] = Netcom_processEventsIteration(handles.OSortConstants.TTLStream, verbose, handles.storedEvents, updateAv, tOff,customData.eventStringArrayPtr);
+    [handles.storedEvents,updateAv,tOff] = Netcom_processEventsIteration(handles.StimOMaticConstants.TTLStream, verbose, handles.storedEvents, updateAv, tOff,customData.eventStringArrayPtr);
     
     %schedule a new event for future averaging
     if updateAv
-        tSchedule = tOff + handles.OSortConstants.LFPAverageAfterOffset*1000;
+        tSchedule = tOff + handles.StimOMaticConstants.LFPAverageAfterOffset*1000;
         
         % schedule a future update event
-        eventToSchedule = [tSchedule handles.OSortConstants.LFPAverageLength];
+        eventToSchedule = [tSchedule handles.StimOMaticConstants.LFPAverageLength];
         customData.labRefs.scheduledEventsStack = scheduleEventOnWorkers( customData.labRefs.scheduledEventsStack, eventToSchedule, nrWorkersToPoll );
     end
     
@@ -53,8 +53,8 @@ updateEach = 100;
 
 t2=tic;
 
-bufferSize = handles.OSortConstants.bufferSizeCSC;
-Fs = handles.OSortConstants.Fs;
+bufferSize = handles.StimOMaticConstants.bufferSizeCSC;
+Fs = handles.StimOMaticConstants.Fs;
 
 customData.labRefs = pollDataParallel(nrWorkersToPoll, customData.labRefs, RTModeOn );
 
@@ -89,7 +89,7 @@ if mod(customData.iterationCounter,updateEach)==0
     set( handles.labelStatusDelays, 'String', ['[ms] Data=' num2str(sysStatus(1)*1000) ' Plot=' num2str(sum(sysStatus(2:3))*1000)] );
 end
 
-%setappdata(guihandles,'CustomDataOSort',customData);
+%setappdata(guihandles,'CustomDataStimOMatic',customData);
 
 %guidata(guihandles,handles);
 

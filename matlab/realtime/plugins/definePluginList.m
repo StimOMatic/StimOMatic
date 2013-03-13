@@ -51,7 +51,7 @@ pList = struct( 'ID', [], ...
 i=1;
 pList(i).ID=i;
 pList(i).name='pSpikes';   %prefix
-pList(i).displayName='Spikes and Waveforms (OSort)';
+pList(i).displayName='Spikes and Waveforms (StimOMatic)';
 pList(i).type=TYPE_CONTINUOUS;
 pList(i).needs_matlab_gui = NEEDS_MATLAB_GUI_TRUE;
 
@@ -117,7 +117,7 @@ pList(i).updateGUIFunc = @pLFPAv_updateGUI;
 i=i+1;
 pList(i).ID=i;
 pList(i).name='pRaster';   %prefix
-pList(i).displayName='Raster/PSTH (OSort) - req pSpikes; ';
+pList(i).displayName='Raster/PSTH (StimOMatic) - req pSpikes; ';
 pList(i).type=TYPE_TRIAL;
 pList(i).needs_matlab_gui = NEEDS_MATLAB_GUI_TRUE;
 pList(i).dependsOn=1; %depends on plugin with this ID to get data (add it afterwards,so a link can be added)

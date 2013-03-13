@@ -10,7 +10,7 @@ handles = appdata.UsedByGUIData_m;
 %% get settings from the GUI
 
 %% data structures neededed
-pluginData.OSortConstants = handlesParent.OSortConstants;
+pluginData.StimOMaticConstants = handlesParent.StimOMaticConstants;
  
 pluginData.nTrialsRaster=0;   %LFP trials
 pluginData.spikeTimepoints=struct('times',[]);  %structure, (x) is list of timestamps relative offset for every trial x

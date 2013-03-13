@@ -14,12 +14,12 @@ end
 if ~isempty( transferedGUIData.xdata)
     %get existing value and only replace with what is new
     ydata = get( handlesPlugin.lineHandles.plotLine1_axesCSCall(CSCChanNr), 'ydata');
-    ydata( transferedGUIData.xdata ) = transferedGUIData.filteredDataLFP+(CSCChanNr-1)*handlesParent.OSortConstants.plotOffsetRawband;
+    ydata( transferedGUIData.xdata ) = transferedGUIData.filteredDataLFP+(CSCChanNr-1)*handlesParent.StimOMaticConstants.plotOffsetRawband;
 
     set( handlesPlugin.lineHandles.plotLine1_axesCSCall(CSCChanNr), 'ydata', ydata);
     
     ydata = get( handlesPlugin.lineHandles.plotLine1_axesSpAll(CSCChanNr), 'ydata');
-    ydata( transferedGUIData.xdata ) = transferedGUIData.filteredDataSpikes+(CSCChanNr-1)*handlesParent.OSortConstants.plotOffsetSpikeband;
+    ydata( transferedGUIData.xdata ) = transferedGUIData.filteredDataSpikes+(CSCChanNr-1)*handlesParent.StimOMaticConstants.plotOffsetSpikeband;
     set( handlesPlugin.lineHandles.plotLine1_axesSpAll(CSCChanNr), 'ydata', ydata );
 end
 

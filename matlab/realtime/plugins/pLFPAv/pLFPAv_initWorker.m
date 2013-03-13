@@ -10,7 +10,7 @@ handles = appdata.UsedByGUIData_m;
 %% get settings from the GUI
 
 %% data structures neededed
-pluginData.OSortConstants = handlesParent.OSortConstants;
+pluginData.StimOMaticConstants = handlesParent.StimOMaticConstants;
 
 pluginData.nTrialsLFP=0;   %LFP trials
 pluginData.LFPtrials=[];

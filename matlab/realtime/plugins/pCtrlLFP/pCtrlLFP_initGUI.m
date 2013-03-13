@@ -16,11 +16,11 @@ handles = appdata.UsedByGUIData_m;
 set(0,'CurrentFigure',handlesGUI.figHandle)
 set( handlesGUI.figHandle,'CurrentAxes',handles.axesControlSignal1)
 
-OSortConstants = handlesParent.OSortConstants;
+StimOMaticConstants = handlesParent.StimOMaticConstants;
 
-stepsize = 1e6 / handlesParent.OSortConstants.Fs; %in ms
+stepsize = 1e6 / handlesParent.StimOMaticConstants.Fs; %in ms
 
-%x = [1:stepsize:OSortConstants.bufferSizeCSC*stepsize]/1000;
+%x = [1:stepsize:StimOMaticConstants.bufferSizeCSC*stepsize]/1000;
 
 nrDataPoints=200;
 

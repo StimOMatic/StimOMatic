@@ -61,7 +61,7 @@ else
 end
 
 %% data structures neededed
-pluginData.OSortConstants = handlesParent.OSortConstants;
+pluginData.StimOMaticConstants = handlesParent.StimOMaticConstants;
  
 pluginData.methodNr = 0;
 pluginData.enabledOnChannel = 0;
@@ -71,7 +71,7 @@ if ~isempty(closedLoopSettings)
     pluginData.enabledOnChannelInt = str2num( closedLoopSettings.channelToUseStr(4:end) );
     
     pluginData.methodNr = closedLoopSettings.methodNr;
-    %pluginData.dataBuffer = zeros(1, handlesParent.OSortConstants.bufferSizeCSC);
+    %pluginData.dataBuffer = zeros(1, handlesParent.StimOMaticConstants.bufferSizeCSC);
     
     pluginData.dataBuffer = zeros(1, 200);
     
@@ -105,7 +105,7 @@ else
 end
 
 %% memory mapping for incoming data
-pluginData = setup_mmap_infrastructure(handlesParent.OSortConstants, pluginData, ['pCtrlLFP-' num2str(abs_ID)]);
+pluginData = setup_mmap_infrastructure(handlesParent.StimOMaticConstants, pluginData, ['pCtrlLFP-' num2str(abs_ID)]);
 
 end
 %% EOF
