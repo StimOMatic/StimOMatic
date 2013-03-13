@@ -26,7 +26,7 @@ This version has been tested with *Cheetah* v5.6.3 and v5.3.1. and Neuralynx Rou
 
 ## Using StimOMatic ##
  
-- run (in Matlab) `>> setpath_win`
+- run (in Matlab) `>> setpath_StimOMatic`
 - run (in Matlab) `>> StimOMatic`
 - modify `Router IP` so that the IP address matches the IP of the computer where `Router.exe` is running (see [1](#1-install-and-run-netcomrouter)).
 - press `Connect` button
