@@ -14,5 +14,5 @@ Overview of all relevant documentation.
 - bugs and feature requests: please submit to [issue tracker][Bugs].
 
 
-[Bugs]: https://github.com/StimOmatic/StimOmatic/issues
+[Bugs]: https://github.com/StimOMatic/StimOMatic/issues
 

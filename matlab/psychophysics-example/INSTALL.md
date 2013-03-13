@@ -1,8 +1,8 @@
-# Instructions to install the Psychophysics display demo for StimOmatic. #
+# Instructions to install the Psychophysics display demo for StimOMatic. #
 
 This package has two components:  
 1) Simple psychophysics toolbox script (Matlab) that displays stimuli conditional on commands received from the online analysis of StimOMatic.  
-2) Python communication server that receives commands sent by StimOmatic.
+2) Python communication server that receives commands sent by StimOMatic.
 
 ## Requirements: ##
 These apply to the system where psychophysics toolbox should be used to display stimuli.

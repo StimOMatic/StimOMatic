@@ -9,7 +9,7 @@
 %%
 
 % adjust these paths accordingly
-basepathImgs = 'C:\Users\rutishauseru\Documents\GitHub\StimOmatic\matlab\psychophysics-example\stimuli\';
+basepathImgs = 'C:\Users\rutishauseru\Documents\GitHub\StimOMatic\matlab\psychophysics-example\stimuli\';
 basepathLogs='c:\logs\';
 
 stimOnTime = 2;

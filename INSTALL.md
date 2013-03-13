@@ -1,12 +1,12 @@
 # Install & Usage instructions #
 
-The following are install and usage instructions for the *StimOmatic* software package that will run on the analysis computer. These instructions assume that you are using a *Neuralynx* system operated by the *Cheetah* data acquisition software.
+The following are install and usage instructions for the *StimOMatic* software package that will run on the analysis computer. These instructions assume that you are using a *Neuralynx* system operated by the *Cheetah* data acquisition software.
 
-For testing, the demo version of *Cheetah* can be used. This can be obtained for free from www.neuralynx.com. The demo version contains a demo data file that can be used for replay and to *StimOmatic* this will look just like a real system.
+For testing, the demo version of *Cheetah* can be used. This can be obtained for free from www.neuralynx.com. The demo version contains a demo data file that can be used for replay and to *StimOMatic* this will look just like a real system.
 
 This version has been tested with *Cheetah* v5.6.3 and v5.3.1. and Neuralynx Router v1.2.0. Version of the router less than 1.2.0 are not supported nor are any version of *Cheetah* less than 5.3.1.
 
-## Installing StimOmatic ##
+## Installing StimOMatic ##
 ### 1) Install and run NetComRouter ###
 
 - download NetComRouter program [http://neuralynx.com/software/Router_v120.zip][NetComRouter] 
@@ -23,7 +23,7 @@ This version has been tested with *Cheetah* v5.6.3 and v5.3.1. and Neuralynx Rou
 - open `setpath_win.m` and modify `basepath` so it points to above directory (full path).
 
 
-## Using StimOmatic ##
+## Using StimOMatic ##
  
 - run `setpath_win`
 - run `OSortViewer`
@@ -53,7 +53,7 @@ This will indicated that the previously selected plugin has the absolute plugin 
 
 ## Using conditional visual displays ##
 
-See the [INSTALL.md](matlab/psychophysics-example/INSTALL.md) file inside the subdirectory `matlab\psychophysics-example` for instructions on how to run the display part of StimOmatic.
+See the [INSTALL.md](matlab/psychophysics-example/INSTALL.md) file inside the subdirectory `matlab\psychophysics-example` for instructions on how to run the display part of StimOMatic.
 
 [NetComRouter]: http://neuralynx.com/software/Router_v120.zip
 
