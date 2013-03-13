@@ -5,7 +5,7 @@
 *StimOMatic* is the accompanying code for the 2013 publication *"A method for closed-loop presentation of sensory stimuli conditional on the internal brain-state of awake animals"* by U. Rutishauser, A. Kotowicz and G. Laurent; Journal of Neuroscience Methods ([http://dx.doi.org/10.1016/j.jneumeth.2013.02.020] [DOI]).
 
 ## Download ##
-- Latest StimOMatic version [v0.13][v0.13].
+- Latest StimOMatic version [v0.14][v0.14].
 
 For more downloads see [DOWNLOADS.md](DOWNLOADS.md)
 
@@ -23,7 +23,7 @@ While we strive to provide a well tested and functioning system, we make no guar
 
 The latest version, documentation and instructions on how to reach us will be made available at [http://stimomatic.brain.mpg.de][ProjectURL]. A permanent but static page containing the initial release can be accessed by visiting [http://www.brain.mpg.de/research/laurent-department/software-techniques.html][LabURL]
 
-[v0.13]: https://github.com/StimOMatic/StimOMatic/archive/v0.13.zip
+[v0.14]: https://github.com/StimOMatic/StimOMatic/archive/v0.14.zip
 [DOI]: http://dx.doi.org/10.1016/j.jneumeth.2013.02.020
 [LabURL]: http://www.brain.mpg.de/research/laurent-department/software-techniques.html
 [ProjectURL]: http://stimomatic.brain.mpg.de/

@@ -21,7 +21,7 @@ This version has been tested with *Cheetah* v5.6.3 and v5.3.1. and Neuralynx Rou
 
 - startup Matlab
 - add directory  `matlab\` to your matlab path (*File* -> *Set Path*).
-- open `setpath_win.m` and modify `basepath` so it points to above directory (full path).
+- open `setpath_StimOMatic.m` and modify `basepath` so it points to above directory (full path).
 
 
 ## Using StimOMatic ##
