@@ -1,6 +1,6 @@
 # tcpClientMat #
 
-*tcpClientMat* is a simple TCP socket client whose main purpose is to communicate with [*tcpServerMmap.py*](../../../python/tcpServerMmap/README.md) but it can be used to communicate with any TCP socket server.
+*tcpClientMat* is a simple TCP socket client whose main purpose is to communicate with [*tcpServerMmap.py*](../../../python/tcpServerMmap/) but it can be used to communicate with any TCP socket server.
 
 ## Pre-compiled versions ##
 
