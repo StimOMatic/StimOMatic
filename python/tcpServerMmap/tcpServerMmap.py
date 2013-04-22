@@ -63,15 +63,15 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
 
         # send feedback back
         self.request.sendall("OK\0")
-		
+        
         # check whether we have to stop the server
         if self.data == STOP_SERVER_STRING:
             self.stopServer()
             return
 
-		# give feedback to user at the very end in case 'print' is slowing things down.
+        # give feedback to user at the very end in case 'print' is slowing things down.
         print "received data:", self.data
-			
+            
     def stopServer(self):
         self.server.socket.close()
 
@@ -81,26 +81,26 @@ def setup_server():
     # get current IP address of default network card
     myIP = SERVERIP
     if SERVERIP == '':
-        # TODO: what if someone has multiple cards?	
+        # TODO: what if someone has multiple cards?    
         myIP = socket.gethostbyname(socket.gethostname())
-    try:
-		# Create the server
-		server = TCPServer((myIP, PORT), MyTCPHandler)
+        try:
+            # Create the server
+            server = TCPServer((myIP, PORT), MyTCPHandler)
 
-		# disable the 'Nagle algorithm'
-		# it makes no difference whether we use 'socket.SOL_TCP' or 'socket.IPPROTO_TCP'
-		# but make sure we are consistent with the client!
-		server.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, True)
-		
-		print "Started server on IP: " + myIP + " Port: " + str(PORT)
-		
-    except:
-		pass
-		print "Failed to create server on " + myIP
-		server = False
+            # disable the 'Nagle algorithm'
+            # it makes no difference whether we use 'socket.SOL_TCP' or 'socket.IPPROTO_TCP'
+            # but make sure we are consistent with the client!
+            server.socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, True)
+    
+            print "Started server on IP: " + myIP + " Port: " + str(PORT)
+    
+        except:
+            pass
+            print "Failed to create server on " + myIP
+            server = False
     return server
 
-	
+    
 ############# MMAP CODE
 def setup_mmap(fname):
     # create the file if it doesn't exist 
@@ -127,7 +127,7 @@ def setup_mmap(fname):
 
 ############# MAIN
 # main routine 
-def run_server(server, mmap_data):	
+def run_server(server, mmap_data):    
 
     try:
         # 'main'
@@ -145,8 +145,8 @@ def run_server(server, mmap_data):
         # either way, close the mapped file @ the end.
         print "Shutting down server"
         mmap_data.close()
-		
-		
+        
+        
 if __name__ == "__main__":
     print "------------------ Server starting up; press ctrl-c to stop. "
 
@@ -154,7 +154,7 @@ if __name__ == "__main__":
     mmap_data = setup_mmap(fname)
     if not mmap_data:
         sys.exit(1)
-	
+    
     # last chance to stop the server from starting up
     try:
         raw_input('press any key to start TCP listening')
