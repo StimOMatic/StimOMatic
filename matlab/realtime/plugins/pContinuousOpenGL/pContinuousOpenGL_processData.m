@@ -1,4 +1,3 @@
-%
 function pluginData = pContinuousOpenGL_processData( newDataReceived, newTimestampsReceived, pluginData, CSCBufferData, CSCTimestampData )
 %disp('pSpikes_processedData called');
 
