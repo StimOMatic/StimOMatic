@@ -1,11 +1,7 @@
-%
-%
-%
 function handlesGUI = pContinuousOpenGL_initPlugin(  )
+% basic 'initPlugin' function for 'non-matlab' plotting.
 
-handlesGUI.figHandle = [];
-%% open the GUI
-%handlesGUI.figHandle = pContinuous_GUI;    % open the GUI
-%set(handlesGUI.figHandle, 'CloseRequestFcn', '');
+    handlesGUI.figHandle = [];
 
-
+end
+%% EOF
