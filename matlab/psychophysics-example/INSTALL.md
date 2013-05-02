@@ -28,7 +28,7 @@ This completes the Python part. Press `Ctrl-C` to close the program properly.
 
 ### 2) Matlab
 
-In the Matlab running on the display system (psychophysics toolbox), execute `setpath_win.m` to initialize all paths.  
+In the Matlab running on the display system (psychophysics toolbox), execute `setpath_StimOMatic.m` to initialize all paths.  
 Modify `experimentScenes1_testConditional.m` accordingly (paths in first few lines).
 
 This script will display stimuli conditional on the power of ongoing oscillations. Also, it will send TTLs to the acqusition
